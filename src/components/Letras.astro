@@ -1,0 +1,33 @@
+---
+// Texto armado letra por letra, como las letras plásticas encastradas en el tablero.
+// Cada letra queda apenas desalineada, igual que cuando se ponen a mano.
+interface Props {
+  texto: string;
+  as?: string;
+  class?: string;
+  id?: string;
+}
+const { texto, as: Tag = 'span', class: clase, id } = Astro.props;
+
+const ruido = (i: number, c: string) => {
+  const x = Math.sin((i + 1) * 12.9898 + c.charCodeAt(0) * 78.233) * 43758.5453;
+  return x - Math.floor(x) - 0.5;
+};
+const palabras = texto.split(' ');
+let n = 0;
+---
+<Tag class:list={['letras', clase]} id={id}>
+  <span class="sr-only">{texto}</span>
+  <span class="letras__fila" aria-hidden="true">
+    {palabras.map((palabra, j) => (
+      <>{j > 0 && ' '}<span class="letras__palabra">
+        {[...palabra].map((c) => {
+          const i = n++;
+          return (
+            <span class="letra" style={`--dy:${(ruido(i, c) * 0.05).toFixed(3)}em;--rot:${(ruido(i + 7, c) * 2.4).toFixed(2)}deg`}>{c}</span>
+          );
+        })}
+      </span></>
+    ))}
+  </span>
+</Tag>

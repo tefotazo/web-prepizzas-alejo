@@ -1,0 +1,17 @@
+---
+import { whatsapp, instagram } from './iconos';
+
+interface Props {
+  nombre: 'whatsapp' | 'instagram' | 'mas' | 'menos';
+  class?: string;
+}
+const { nombre, class: clase } = Astro.props;
+const marcas = { whatsapp, instagram };
+---
+{nombre === 'whatsapp' || nombre === 'instagram' ? (
+  <svg class:list={['icono', clase]} viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d={marcas[nombre]} /></svg>
+) : (
+  <svg class:list={['icono', clase]} viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+    <path d={nombre === 'mas' ? 'M5 12h14M12 5v14' : 'M5 12h14'} fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="square" />
+  </svg>
+)}

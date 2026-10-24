@@ -1,0 +1,693 @@
+---
+import Base from '../layouts/Base.astro';
+import Letras from '../components/Letras.astro';
+import Icono from '../components/Icono.astro';
+import Prepizza from '../components/Prepizza.astro';
+import { negocio, formatoPrecio, linkWhatsApp } from '../data/negocio';
+
+const rinde = negocio.productos.find((p) => p.id === negocio.productoRinde) ?? negocio.productos[0];
+const porUnidad = formatoPrecio(Math.round(rinde.precio / rinde.unidades));
+const consulta = linkWhatsApp(`Hola! Quería consultar qué prepizzas tienen hoy.`);
+const mayorista = linkWhatsApp(`Hola! Tengo un comercio y quiero recibir la lista de precios mayoristas.`);
+const anio = new Date().getFullYear();
+---
+<Base
+  titulo={`${negocio.nombre} · Prepizzas caseras en ${negocio.barrio}`}
+  descripcion={`Prepizzas caseras hechas por ${negocio.familia}. Pedí por WhatsApp: retiro, envío a domicilio y venta a comercios.`}
+>
+  <main>
+    <!-- Tablero principal: lo que hay hoy y el pedido -->
+    <section class="tablero" aria-labelledby="hoy-hay">
+      <div class="contenedor">
+        <header class="rotulos">
+          <Letras texto={negocio.nombre} as="p" class="rotulo rotulo--marca" />
+          <Letras texto={negocio.horario} as="p" class="rotulo" />
+        </header>
+
+        <div class="tablero__grilla">
+        <div class="tablero__titular">
+          <h1 class="hoy-hay" id="hoy-hay">
+            <span class="sr-only">Hoy hay prepizzas caseras</span>
+            <span aria-hidden="true"><Letras texto="Hoy" class="hoy" /> <Letras texto="hay" class="hay" /></span>
+          </h1>
+          <p class="bajada">Prepizzas caseras, amasadas por {negocio.familia}. Elegí cuántas querés y te armamos el mensaje de WhatsApp.</p>
+        </div>
+
+        <form class="pedido" id="pedido" data-mensaje-vacio="Hola! Quería consultar qué prepizzas tienen hoy." data-retiro={negocio.direccionRetiro} data-wa={`https://wa.me/${negocio.whatsapp}`}>
+          <ul class="renglones" role="list">
+            {negocio.productos.map((p) => (
+              <li class="renglon" data-producto={p.id} data-nombre={p.nombre} data-precio={p.precio}>
+                <div class="renglon__que">
+                  <Letras texto={p.nombre} as="h2" class="renglon__nombre" />
+                  <p class="renglon__detalle">{p.detalle}</p>
+                </div>
+                <div class="renglon__precio">
+                  <Letras texto={formatoPrecio(p.precio)} class="precio" />
+                  <span class="subtotal letras" data-subtotal aria-hidden="true"></span>
+                </div>
+                <div class="cantidad" role="group" aria-label={`Cantidad de ${p.nombre}`}>
+                  <button type="button" class="cantidad__boton" data-accion="menos" aria-label={`Sacar una ${p.nombre}`} disabled>
+                    <Icono nombre="menos" />
+                  </button>
+                  <span class="cantidad__numero letras" data-cantidad aria-hidden="true"><span class="letra">0</span></span>
+                  <button type="button" class="cantidad__boton" data-accion="mas" aria-label={`Sumar una ${p.nombre}`}>
+                    <Icono nombre="mas" />
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+
+          <fieldset class="entrega">
+            <legend class="sr-only">Forma de entrega</legend>
+            <Letras texto="Entrega" class="entrega__titulo" />
+            <div class="entrega__opciones">
+              <label class="opcion">
+                <input type="radio" name="entrega" value="retiro" checked />
+                <Letras texto="Retiro" />
+              </label>
+              <label class="opcion">
+                <input type="radio" name="entrega" value="envio" />
+                <Letras texto="Envío" />
+              </label>
+              <label class="opcion opcion--comercio">
+                <input type="radio" name="entrega" value="comercio" />
+                <Letras texto="Comercio" />
+              </label>
+            </div>
+            <p class="entrega__nota" data-nota-retiro>Pasás a buscar por {negocio.direccionRetiro}.</p>
+            <p class="entrega__nota" data-nota-comercio hidden>Precio por mayor para almacenes, kioscos y rotiserías. {negocio.mayorista.minimo}. <a href="#comercios">Ver condiciones</a>.</p>
+            <div class="entrega__direccion" data-direccion hidden>
+              <label for="direccion">¿A qué dirección te las llevamos?</label>
+              <input id="direccion" name="direccion" type="text" autocomplete="street-address" placeholder="Calle, número y barrio" />
+              <p class="entrega__nota">{negocio.envio}</p>
+            </div>
+          </fieldset>
+
+          <div class="total">
+            <div class="total__cifra">
+              <span class="total__vacio" data-vacio>Sumá con el + lo que quieras llevar</span>
+              <span class="total__lleno" data-lleno hidden>
+                <Letras texto="Total" class="total__titulo" />
+                <span class="total__monto letras" data-total aria-hidden="true"></span>
+              </span>
+            </div>
+            <a class="plaqueta plaqueta--grande" href={consulta} data-cta-pedido target="_blank" rel="noopener">
+              <Icono nombre="whatsapp" />
+              <span data-cta-texto>Consultar por WhatsApp</span>
+            </a>
+          </div>
+          <p class="sr-only" aria-live="polite" data-anuncio></p>
+        </form>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- La docena, dibujada con las letras del tablero -->
+    <section class="seccion rinde" aria-labelledby="rinde-titulo">
+      <div class="contenedor"><div class="placa">
+        <h2 class="titulo" id="rinde-titulo">
+          <Letras texto={`${rinde.unidades} prepizzas por ${formatoPrecio(rinde.precio)}`} />
+        </h2>
+        <div class="docena" aria-hidden="true" data-docena>
+          {Array.from({ length: rinde.unidades }).map((_, i) => <span class="letra docena__pieza"><Prepizza giro={(i * 47) % 360} /></span>)}
+        </div>
+        <p class="rinde__cuenta">
+          <Letras texto={`= ${porUnidad} cada una`} class="rinde__unidad" />
+        </p>
+        <p class="rinde__texto">{rinde.nombre}: {rinde.detalle}. {negocio.consejo}</p>
+      </div></div>
+    </section>
+
+    <!-- Cómo llega -->
+    <section class="seccion" aria-labelledby="llega-titulo">
+      <div class="contenedor"><div class="placa">
+        <h2 class="titulo" id="llega-titulo"><Letras texto="Cómo te llega" /></h2>
+        <dl class="lista">
+          <div class="lista__fila">
+            <dt><Letras texto="Retiro" class="lista__clave" /></dt>
+            <dd>
+              <p class="lista__dato">{negocio.direccionRetiro}, {negocio.barrio}</p>
+              <p>{negocio.horario}. Avisanos por WhatsApp y te lo dejamos listo.</p>
+            </dd>
+          </div>
+          <div class="lista__fila">
+            <dt><Letras texto="Envío" class="lista__clave" /></dt>
+            <dd>
+              <p class="lista__dato">{negocio.zonasEnvio.join(' · ')}</p>
+              <p>{negocio.envio}</p>
+            </dd>
+          </div>
+          <div class="lista__fila">
+            <dt><Letras texto="Comercios" class="lista__clave" /></dt>
+            <dd>
+              <p class="lista__dato">Venta por mayor</p>
+              <p>Para almacenes, kioscos y rotiserías. <a href="#comercios">Ver condiciones</a>.</p>
+            </dd>
+          </div>
+        </dl>
+      </div></div>
+    </section>
+
+    <!-- Comercios -->
+    <section class="seccion comercios" id="comercios" aria-labelledby="comercios-titulo">
+      <div class="contenedor"><div class="placa">
+        <h2 class="titulo titulo--rojo" id="comercios-titulo">
+          <Letras texto="¿Tenés almacén, kiosco o rotisería?" />
+        </h2>
+        <div class="comercios__grilla">
+        <ul class="condiciones" role="list">
+          <li><Letras texto={negocio.mayorista.minimo} /></li>
+          <li><Letras texto={negocio.mayorista.entrega} /></li>
+          <li><Letras texto={negocio.mayorista.precio} /></li>
+        </ul>
+        <a class="plaqueta" href={mayorista} target="_blank" rel="noopener">
+          <Icono nombre="whatsapp" />
+          Precios mayoristas
+        </a>
+        </div>
+      </div></div>
+    </section>
+
+    <!-- La familia -->
+    <section class="seccion familia" aria-labelledby="familia-titulo">
+      <div class="contenedor familia__grilla">
+        <h2 class="titulo" id="familia-titulo"><Letras texto="Las amasamos nosotros" /></h2>
+        <div class="familia__texto">
+          {negocio.historia.map((parrafo) => <p>{parrafo}</p>)}
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="pie">
+    <div class="contenedor pie__grilla">
+      <Letras texto={negocio.nombre} as="p" class="pie__marca" />
+      <div class="pie__datos">
+        <p>{negocio.direccionRetiro}, {negocio.barrio}</p>
+        <p>{negocio.horario}</p>
+      </div>
+      <ul class="pie__links" role="list">
+        <li>
+          <a href={consulta} target="_blank" rel="noopener"><Icono nombre="whatsapp" /> WhatsApp</a>
+        </li>
+        {negocio.instagram && (
+          <li>
+            {negocio.ejemplo ? (
+              <span class="pie__ejemplo"><Icono nombre="instagram" /> @{negocio.instagram} (ejemplo)</span>
+            ) : (
+              <a href={`https://instagram.com/${negocio.instagram}`} target="_blank" rel="noopener"><Icono nombre="instagram" /> @{negocio.instagram}</a>
+            )}
+          </li>
+        )}
+      </ul>
+      <p class="pie__legal">© {anio} {negocio.nombre}</p>
+    </div>
+  </footer>
+
+  <!-- Barra fija con el pedido, cuando el tablero queda arriba -->
+  <div class="barra" data-barra hidden>
+    <span class="barra__resumen letras" data-barra-resumen></span>
+    <a class="plaqueta barra__cta" href={consulta} data-cta-pedido target="_blank" rel="noopener">
+      <Icono nombre="whatsapp" />
+      <span data-barra-cta>Consultar</span>
+    </a>
+  </div>
+</Base>
+
+<script>
+  import { iniciarPedido, iniciarDocena } from '../scripts/pedido';
+  iniciarPedido();
+  iniciarDocena();
+</script>
+
+<style>
+  /* ---------- Tablero principal ---------- */
+  .tablero {
+    min-height: 100svh;
+    padding-block: calc(var(--marco) + clamp(1.25rem, 3.5vh, 2.5rem)) clamp(3rem, 8vh, 5rem);
+  }
+
+  .rotulos {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem 2rem;
+  }
+
+  .rotulo {
+    margin: 0;
+    font-size: clamp(0.95rem, 1.6vw, 1.15rem);
+    letter-spacing: 0.16em;
+    color: var(--letra-2);
+  }
+
+  .rotulo--marca { color: var(--letra); }
+
+  .hoy-hay {
+    margin: clamp(1.25rem, 4vh, 2.5rem) 0 0;
+    font-size: clamp(4rem, min(20vw, 21vh), 11.5rem);
+    line-height: 0.86;
+    font-weight: 600;
+  }
+
+  .hoy-hay :global(.letras) { letter-spacing: 0.03em; }
+  .hoy-hay :global(.hay) { color: var(--amarillo); }
+
+  .bajada {
+    max-width: 34rem;
+    margin: clamp(0.9rem, 2.5vh, 1.5rem) 0 clamp(1.5rem, 4vh, 2.5rem);
+    color: var(--letra-2);
+    font-size: clamp(1rem, 1.4vw, 1.15rem);
+  }
+
+  .pedido { margin: 0; }
+
+  @media (min-width: 1100px) {
+    .tablero__grilla {
+      display: grid;
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+      gap: clamp(3rem, 5vw, 6rem);
+      align-items: start;
+      margin-top: clamp(1.5rem, 4vh, 3rem);
+    }
+    .hoy-hay {
+      margin-top: 0;
+      font-size: clamp(8rem, min(13vw, 26vh), 13.5rem);
+      line-height: 0.82;
+    }
+    .hoy-hay :global(.letras) { display: block; }
+    .hoy-hay :global(.hay) { margin-top: 0.06em; }
+    .bajada { margin-bottom: 0; max-width: 24rem; }
+    .renglon { padding-block: clamp(0.7rem, 1.6vh, 1rem); gap: 0.25rem 2rem; }
+    .renglon__nombre { font-size: clamp(1.5rem, 2.2vw, 2rem); }
+    .renglon__detalle { margin-top: 0.25rem; }
+    .renglon__precio { font-size: clamp(1.4rem, 2vw, 1.85rem); }
+  }
+
+  .renglones {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 2px solid var(--ranura);
+  }
+
+  .renglon {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      'que precio'
+      'que cantidad';
+    align-items: center;
+    gap: 0.5rem 1rem;
+    padding-block: clamp(0.85rem, 2vh, 1.15rem);
+    border-bottom: 2px solid var(--ranura);
+    box-shadow: 0 1px 0 rgb(255 255 255 / 0.04);
+  }
+
+  .renglon__que { grid-area: que; min-width: 0; }
+
+  .renglon__nombre {
+    margin: 0;
+    font-size: clamp(1.45rem, 3.6vw, 2.35rem);
+    font-weight: 600;
+    transition: color 200ms var(--ease);
+  }
+
+  .renglon__detalle {
+    margin: 0.4rem 0 0;
+    color: var(--letra-2);
+    font-size: 0.95rem;
+    line-height: 1.35;
+  }
+
+  .renglon__precio {
+    grid-area: precio;
+    text-align: right;
+    font-size: clamp(1.35rem, 3vw, 2.1rem);
+    color: var(--amarillo);
+  }
+
+  .subtotal {
+    display: block;
+    min-height: 1em;
+    margin-top: 0.3rem;
+    font-size: 0.95rem;
+    letter-spacing: 0.08em;
+    color: var(--letra-2);
+  }
+
+  .cantidad {
+    grid-area: cantidad;
+    justify-self: end;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .cantidad__boton {
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    padding: 0;
+    border: 0;
+    border-radius: 3px;
+    background: none;
+    color: var(--letra);
+    cursor: pointer;
+    transition: color 160ms var(--ease), transform 160ms var(--ease);
+  }
+
+  .cantidad__boton :global(.icono) { width: 1.6rem; height: 1.6rem; filter: drop-shadow(0 2px 1.5px rgb(0 0 0 / 0.65)); }
+
+  .cantidad__boton:hover:not(:disabled) { color: var(--amarillo); }
+  .cantidad__boton:active:not(:disabled) { transform: translateY(2px); }
+  .cantidad__boton:disabled { color: var(--letra-3); opacity: 0.45; cursor: default; }
+
+  .cantidad__numero {
+    min-width: 2.4ch;
+    text-align: center;
+    font-size: 1.9rem;
+    color: var(--letra-3);
+    transition: color 200ms var(--ease);
+  }
+
+  .renglon.elegido .renglon__nombre { color: var(--amarillo); }
+  .renglon.elegido .cantidad__numero { color: var(--letra); }
+
+  @media (min-width: 760px) {
+    .renglon {
+      grid-template-columns: minmax(0, 1fr) auto auto;
+      grid-template-areas: 'que precio cantidad';
+      gap: 2.5rem;
+    }
+    .cantidad { gap: 0.5rem; }
+  }
+
+  /* Entrega */
+  .entrega {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 0.75rem 1.5rem;
+    margin: 0;
+    padding: 1.1rem 0;
+    border: 0;
+    border-bottom: 2px solid var(--ranura);
+  }
+
+  .entrega__titulo { font-size: 1.15rem; letter-spacing: 0.14em; color: var(--letra-2); }
+
+  .entrega__opciones { display: flex; flex-wrap: wrap; gap: 0.25rem; justify-self: end; }
+  .opcion--comercio:has(input:checked) { color: var(--rojo); }
+  .opcion--comercio:has(input:checked)::after { background: var(--rojo); }
+
+  @media (max-width: 559px) {
+    .entrega { grid-template-columns: 1fr; }
+    .entrega__opciones { justify-self: start; margin-left: -1rem; }
+  }
+
+  .opcion {
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-height: 3rem;
+    padding: 0.4rem 1rem;
+    font-size: clamp(1.3rem, 3vw, 1.75rem);
+    color: var(--letra-3);
+    cursor: pointer;
+    border-radius: 3px;
+    transition: color 160ms var(--ease);
+  }
+
+  .opcion input {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .opcion:hover { color: var(--letra); }
+  .opcion:has(input:checked) { color: var(--amarillo); }
+  .opcion:has(input:checked)::after { content: ''; position: absolute; left: 1rem; right: 1rem; bottom: 0.15rem; height: 3px; background: var(--amarillo); box-shadow: 0 2px 2px rgb(0 0 0 / 0.5); }
+  .opcion:has(input:focus-visible) { outline: 3px solid var(--amarillo); outline-offset: 3px; }
+
+  .entrega__nota,
+  .entrega__direccion { grid-column: 1 / -1; }
+
+  .entrega__nota { margin: 0; color: var(--letra-2); font-size: 0.95rem; }
+  .entrega__nota[hidden] { display: none; }
+  .entrega__nota a { color: var(--letra); }
+
+  .entrega__direccion { display: grid; gap: 0.5rem; }
+  .entrega__direccion[hidden] { display: none; }
+
+  .entrega__direccion label { font-weight: 500; }
+
+  .entrega__direccion input {
+    width: 100%;
+    max-width: 32rem;
+    min-height: 3.25rem;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--alu-3);
+    border-radius: 3px;
+    background: var(--ranura);
+    color: var(--letra);
+    font: inherit;
+    caret-color: var(--amarillo);
+    box-shadow: inset 0 2px 5px rgb(0 0 0 / 0.6);
+  }
+
+  .entrega__direccion input::placeholder { color: var(--letra-3); }
+  .entrega__direccion input:focus-visible { outline-offset: 2px; border-color: var(--amarillo); }
+
+  @media (min-width: 760px) {
+    .entrega { grid-template-columns: auto auto 1fr; }
+    .entrega__opciones { justify-self: start; }
+    .entrega__nota[data-nota-retiro],
+    .entrega__nota[data-nota-comercio] { grid-column: auto; justify-self: end; text-align: right; max-width: 22rem; }
+  }
+
+  /* Total y acción */
+  .total {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.25rem 2rem;
+    padding-top: clamp(1.25rem, 3vh, 1.75rem);
+  }
+
+  .total__vacio {
+    font-family: var(--letras);
+    font-weight: 500;
+    font-size: clamp(1.2rem, 2.4vw, 1.5rem);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--letra-2);
+  }
+
+  .total__lleno { display: flex; align-items: baseline; gap: 1rem; }
+  .total__lleno[hidden] { display: none; }
+
+  .total__titulo { font-size: 1.15rem; letter-spacing: 0.14em; color: var(--letra-2); }
+
+  .total__monto { font-size: clamp(2.4rem, 6vw, 3.6rem); color: var(--amarillo); }
+
+  .plaqueta--grande { font-size: clamp(1.35rem, 2.4vw, 1.6rem); padding-inline: 1.75rem; }
+
+  @media (max-width: 560px) {
+    .total .plaqueta { width: 100%; font-size: 1.2rem; letter-spacing: 0.04em; padding-inline: 1rem; }
+  }
+
+  /* ---------- Secciones ---------- */
+  .placa {
+    padding: clamp(1.75rem, 5vw, 3.5rem);
+    border: 8px solid var(--alu-2);
+    border-radius: 3px;
+    box-shadow:
+      inset 0 0 0 1px rgb(255 255 255 / 0.3),
+      inset 0 5px 12px rgb(0 0 0 / 0.55),
+      0 14px 30px -12px rgb(0 0 0 / 0.7);
+  }
+
+  @media (max-width: 559px) {
+    .placa { margin-inline: calc(var(--gutter) * -0.5); border-width: 6px; }
+  }
+
+  .comercios__grilla { display: grid; gap: 2rem 4rem; }
+
+  @media (min-width: 900px) {
+    .comercios__grilla { grid-template-columns: 1fr auto; align-items: end; }
+    .comercios__grilla .condiciones { margin-bottom: 0; }
+  }
+
+  .seccion {
+    padding-block: clamp(4.5rem, 12vw, 8rem) 0;
+  }
+
+  .titulo {
+    margin: 0 0 clamp(1.5rem, 4vw, 2.5rem);
+    max-width: 18ch;
+    font-size: clamp(2.4rem, 7vw, 4.75rem);
+    font-weight: 600;
+    line-height: 0.98;
+    text-wrap: balance;
+  }
+
+  .titulo--rojo { color: var(--rojo); max-width: 16ch; }
+
+  /* La docena */
+  .docena {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    max-width: 62rem;
+    font-family: var(--letras);
+    font-weight: 600;
+    gap: clamp(0.4rem, 1.2vw, 0.9rem);
+    line-height: 1;
+  }
+
+  @media (min-width: 900px) {
+    .docena { grid-template-columns: repeat(12, 1fr); }
+  }
+
+  .docena__pieza { display: block; }
+  .docena :global(.prepizza) { width: 100%; height: auto; transform: rotate(var(--giro)); filter: drop-shadow(0 3px 3px rgb(0 0 0 / 0.55)); }
+  .docena :global(.prepizza__masa) { fill: var(--letra); }
+  .docena :global(.prepizza__salsa) { fill: var(--rojo); }
+  .docena :global(.prepizza__pinchazos) { fill: rgb(0 0 0 / 0.35); }
+
+  .rinde__cuenta {
+    margin: clamp(1rem, 3vw, 1.75rem) 0 0;
+    font-size: clamp(2rem, 5.4vw, 3.5rem);
+    color: var(--amarillo);
+  }
+
+  .rinde__texto {
+    max-width: 40rem;
+    margin: 1.25rem 0 0;
+    color: var(--letra-2);
+  }
+
+  /* Lista de entrega */
+  .lista { margin: 0; border-top: 2px solid var(--ranura); }
+
+  .lista__fila {
+    display: grid;
+    gap: 0.5rem 2rem;
+    padding-block: 1.5rem;
+    border-bottom: 2px solid var(--ranura);
+  }
+
+  @media (min-width: 760px) {
+    .lista__fila { grid-template-columns: 16rem 1fr; align-items: baseline; }
+  }
+
+  .lista dt { margin: 0; }
+  .lista dd { margin: 0; max-width: 42rem; }
+  .lista dd p { margin: 0; color: var(--letra-2); }
+  .lista dd a { color: var(--letra); }
+
+  .lista__clave { font-size: clamp(1.6rem, 3.6vw, 2.25rem); color: var(--amarillo); }
+
+  .lista dd .lista__dato {
+    margin-bottom: 0.3rem;
+    color: var(--letra);
+    font-size: 1.2rem;
+    font-weight: 500;
+  }
+
+  /* Comercios */
+  .condiciones {
+    margin: 0 0 2.25rem;
+    padding: 0;
+    list-style: none;
+    border-top: 2px solid var(--ranura);
+  }
+
+  .condiciones li {
+    padding-block: 1rem;
+    border-bottom: 2px solid var(--ranura);
+    font-size: clamp(1.35rem, 3.2vw, 2rem);
+  }
+
+  /* Familia */
+  .familia { padding-bottom: clamp(4.5rem, 12vw, 8rem); }
+
+  .familia__grilla { display: grid; gap: 0 4rem; }
+
+  @media (min-width: 900px) {
+    .familia__grilla { grid-template-columns: 1fr 1fr; align-items: start; }
+  }
+
+  .familia__texto { max-width: 36rem; font-size: 1.15rem; }
+  .familia__texto p { margin: 0 0 1rem; }
+
+  /* ---------- Pie ---------- */
+  .pie {
+    padding-block: 2.5rem calc(var(--marco) + 6.5rem);
+    background: rgb(0 0 0 / 0.22);
+    border-top: 2px solid var(--ranura);
+    color: var(--letra-2);
+    font-size: 0.95rem;
+  }
+
+  .pie__grilla {
+    display: grid;
+    gap: 1.25rem 3rem;
+  }
+
+  @media (min-width: 760px) {
+    .pie__grilla { grid-template-columns: auto 1fr auto; align-items: start; }
+    .pie__legal { grid-column: 1 / -1; }
+  }
+
+  .pie p { margin: 0; }
+  .pie__marca { color: var(--letra); font-size: 1.35rem; letter-spacing: 0.12em; }
+
+  .pie__links { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; margin: 0; padding: 0; list-style: none; }
+  .pie__links a { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.75rem; color: var(--letra); text-decoration: none; }
+  .pie__links a:hover { color: var(--amarillo); }
+  .pie__links :global(.icono) { width: 1.1rem; height: 1.1rem; }
+  .pie__ejemplo { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.75rem; }
+
+  .pie__legal { font-size: 0.85rem; color: var(--letra-3); }
+
+  /* ---------- Barra fija ---------- */
+  .barra {
+    position: fixed;
+    left: var(--marco);
+    right: var(--marco);
+    bottom: var(--marco);
+    z-index: 39;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.6rem 0.6rem 0.6rem calc(var(--gutter) * 0.6 + 0.5rem);
+    background: linear-gradient(180deg, var(--alu-1), var(--alu-2));
+    color: var(--fieltro);
+    box-shadow: 0 -8px 20px -6px rgb(0 0 0 / 0.55);
+    transform: translateY(0);
+    transition: transform 320ms var(--ease);
+  }
+
+  .barra[hidden] { display: flex; transform: translateY(calc(100% + var(--marco))); visibility: hidden; transition: transform 320ms var(--ease), visibility 0s 320ms; }
+
+  .barra__resumen { font-size: clamp(1.05rem, 4.4vw, 1.3rem); letter-spacing: 0.04em; white-space: nowrap; }
+  .barra__resumen :global(.letra) { text-shadow: none; }
+
+  .barra__cta {
+    min-height: 3rem;
+    padding: 0.75rem 1.25rem 0.65rem;
+    background: var(--fieltro);
+    color: var(--letra);
+    font-size: 1.2rem;
+  }
+
+  .barra__cta:hover { background: var(--ranura); color: var(--amarillo); }
+</style>

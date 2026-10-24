@@ -1,0 +1,30 @@
+---
+import '../styles/global.css';
+import { negocio } from '../data/negocio';
+
+interface Props {
+  titulo: string;
+  descripcion: string;
+}
+const { titulo, descripcion } = Astro.props;
+---
+<!doctype html>
+<html lang="es-AR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{titulo}</title>
+    <meta name="description" content={descripcion} />
+    <meta name="theme-color" content="#17231e" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta property="og:title" content={titulo} />
+    <meta property="og:description" content={descripcion} />
+    <meta property="og:type" content="website" />
+  </head>
+  <body>
+    {negocio.ejemplo && (
+      <p class="aviso">Sitio de ejemplo: precios, horarios, contacto, condiciones e historia todavía no son los reales.</p>
+    )}
+    <slot />
+  </body>
+</html>

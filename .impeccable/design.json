@@ -1,0 +1,398 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-24T17:00:00-03:00",
+  "title": "Design System: Prepizzas de la casa",
+  "extensions": {
+    "colorMeta": {
+      "fieltro": {
+        "role": "neutral",
+        "displayName": "Fieltro",
+        "canonical": "#17231e",
+        "tonalRamp": [
+          "#040e09",
+          "#1b2722",
+          "#36433e",
+          "#54615b",
+          "#73817b",
+          "#94a29c",
+          "#b9c8c1",
+          "#e3f3ec"
+        ]
+      },
+      "ranura": {
+        "role": "neutral",
+        "displayName": "Ranura",
+        "canonical": "#0b130f",
+        "tonalRamp": [
+          "#060d09",
+          "#1e2622",
+          "#39423d",
+          "#57605b",
+          "#76807b",
+          "#97a19c",
+          "#bcc7c1",
+          "#e6f2ec"
+        ]
+      },
+      "letra": {
+        "role": "neutral",
+        "displayName": "Letra",
+        "canonical": "#f3efe4",
+        "tonalRamp": [
+          "#0e0b05",
+          "#27241c",
+          "#434037",
+          "#615d54",
+          "#817d73",
+          "#a29e94",
+          "#c8c4b9",
+          "#f2eee3"
+        ]
+      },
+      "letra-2": {
+        "role": "neutral",
+        "displayName": "Letra gastada",
+        "canonical": "#b9bfb3",
+        "tonalRamp": [
+          "#090d05",
+          "#21261d",
+          "#3d4238",
+          "#5a6055",
+          "#7a7f74",
+          "#9ba195",
+          "#c0c7ba",
+          "#ebf1e4"
+        ]
+      },
+      "letra-3": {
+        "role": "neutral",
+        "displayName": "Letra apagada",
+        "canonical": "#8e978c",
+        "tonalRamp": [
+          "#070d06",
+          "#1f261e",
+          "#3b4239",
+          "#586056",
+          "#778076",
+          "#98a296",
+          "#bec7bc",
+          "#e8f2e6"
+        ]
+      },
+      "amarillo": {
+        "role": "primary",
+        "displayName": "Amarillo letra",
+        "canonical": "#f2c230",
+        "tonalRamp": [
+          "#100a00",
+          "#2e2201",
+          "#503d02",
+          "#745a04",
+          "#9a7801",
+          "#c29803",
+          "#edbd28",
+          "#ffedc1"
+        ]
+      },
+      "rojo": {
+        "role": "secondary",
+        "displayName": "Rojo letra",
+        "canonical": "#e5482f",
+        "tonalRamp": [
+          "#1e0100",
+          "#480601",
+          "#791001",
+          "#ad1c02",
+          "#da3c24",
+          "#ff664c",
+          "#ffac9b",
+          "#fee9e5"
+        ]
+      },
+      "alu-1": {
+        "role": "neutral",
+        "displayName": "Aluminio claro",
+        "canonical": "#e1e4e0",
+        "tonalRamp": [
+          "#0a0c09",
+          "#232522",
+          "#3e413d",
+          "#5c5e5b",
+          "#7b7e7b",
+          "#9c9f9c",
+          "#c2c5c1",
+          "#ecefeb"
+        ]
+      },
+      "alu-2": {
+        "role": "neutral",
+        "displayName": "Aluminio",
+        "canonical": "#a4aaa5",
+        "tonalRamp": [
+          "#080c09",
+          "#212522",
+          "#3c413d",
+          "#5a5f5b",
+          "#797f7a",
+          "#9aa09b",
+          "#c0c6c1",
+          "#eaf0eb"
+        ]
+      },
+      "alu-3": {
+        "role": "neutral",
+        "displayName": "Aluminio oscuro",
+        "canonical": "#6d746f",
+        "tonalRamp": [
+          "#080d09",
+          "#202622",
+          "#3b423d",
+          "#59605b",
+          "#787f7a",
+          "#99a19b",
+          "#bfc6c1",
+          "#e9f1eb"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Sólo \"HOY HAY\" en el primer tablero; en >=1100px clamp(8rem, min(13vw, 26vh), 13.5rem) con line-height 0.82, una palabra por línea."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Títulos de cada placa, máx. 18ch, text-wrap balance."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Nombre de producto en el renglón; claves de lista, condiciones y opciones de entrega en la misma familia de tamaños."
+      },
+      "cifra": {
+        "displayName": "Cifra",
+        "purpose": "Total del pedido y precio por unidad; números tabulares."
+      },
+      "boton": {
+        "displayName": "Botón",
+        "purpose": "Texto de la plaqueta."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Rótulos chicos del tablero (marca, horario), mayúscula espaciada."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Bajada, historia y texto de listas, en caja baja."
+      },
+      "body-small": {
+        "displayName": "Body small",
+        "purpose": "Detalle de producto, notas de entrega, pie."
+      }
+    },
+    "shadows": [
+      {
+        "name": "letra",
+        "value": "text-shadow: 0 0.04em 0.06em rgb(0 0 0 / 0.6)",
+        "purpose": "Cada letra plástica; se quita sobre aluminio."
+      },
+      {
+        "name": "pieza",
+        "value": "filter: drop-shadow(0 2px 1.5px rgb(0 0 0 / 0.65))",
+        "purpose": "Íconos +/- del control de cantidad. Prepizzas dibujadas: drop-shadow(0 3px 3px rgb(0 0 0 / 0.55))."
+      },
+      {
+        "name": "plaqueta",
+        "value": "0 1px 0 rgb(255 255 255 / 0.6) inset, 0 8px 18px -6px rgb(0 0 0 / 0.65), 0 2px 3px rgb(0 0 0 / 0.4)",
+        "purpose": "Cartel claro de la acción en reposo."
+      },
+      {
+        "name": "plaqueta-activa",
+        "value": "0 1px 0 rgb(255 255 255 / 0.6) inset, 0 3px 6px -2px rgb(0 0 0 / 0.6)",
+        "purpose": "Plaqueta presionada (con translateY(2px))."
+      },
+      {
+        "name": "marco",
+        "value": "inset 0 0 0 1px rgb(0 0 0 / 0.5), inset 0 6px 14px rgb(0 0 0 / 0.55)",
+        "purpose": "Fieltro hundido dentro del marco fijo del viewport."
+      },
+      {
+        "name": "placa",
+        "value": "inset 0 0 0 1px rgb(255 255 255 / 0.3), inset 0 5px 12px rgb(0 0 0 / 0.55), 0 14px 30px -12px rgb(0 0 0 / 0.7)",
+        "purpose": "Tablero secundario con marco de aluminio."
+      },
+      {
+        "name": "surco",
+        "value": "inset 0 2px 5px rgb(0 0 0 / 0.6)",
+        "purpose": "Campo de texto hundido."
+      },
+      {
+        "name": "barra",
+        "value": "0 -8px 20px -6px rgb(0 0 0 / 0.55)",
+        "purpose": "Barra fija anclada al marco inferior, proyecta hacia arriba."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Única curva del sistema: hover, encastre, barra."
+      },
+      {
+        "name": "encastre",
+        "value": "420ms ease; desde translateY(-0.45em) rotate(-9deg) blur(3px) opacity 0",
+        "purpose": "Sólo las letras que cambiaron caen y se encastran; escalonado 40ms (70ms en la docena)."
+      },
+      {
+        "name": "hover",
+        "value": "160-200ms ease",
+        "purpose": "Cambios de color y de fondo en controles y plaqueta."
+      },
+      {
+        "name": "barra",
+        "value": "320ms ease",
+        "purpose": "Entrada y salida de la barra fija."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "1ms",
+        "purpose": "Con prefers-reduced-motion toda animación y transición se reduce a 1ms."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "chico",
+        "value": "560px"
+      },
+      {
+        "name": "renglon",
+        "value": "760px"
+      },
+      {
+        "name": "marco",
+        "value": "900px"
+      },
+      {
+        "name": "tablero",
+        "value": "1100px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Plaqueta",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "El único cartel claro sobre el fieltro; siempre la acción de WhatsApp.",
+      "html": "<a class=\"ds-plaqueta\" href=\"#\"><svg class=\"ds-icono\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path fill=\"currentColor\" d=\"M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z\"/></svg>Pedir por WhatsApp</a>",
+      "css": ".ds-plaqueta { display: inline-flex; align-items: center; gap: 0.6em; min-height: 3.5rem; padding: 0.95rem 1.5rem 0.85rem; border-radius: 3px; background: var(--letra, #f3efe4); color: var(--fieltro, #17231e); font-family: var(--letras, 'Barlow Condensed', 'Arial Narrow', sans-serif); font-weight: 600; font-size: 1.4rem; letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none; line-height: 1; white-space: nowrap; box-shadow: 0 1px 0 rgb(255 255 255 / 0.6) inset, 0 8px 18px -6px rgb(0 0 0 / 0.65), 0 2px 3px rgb(0 0 0 / 0.4); transition: background-color 180ms cubic-bezier(0.16, 1, 0.3, 1), transform 180ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 180ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-plaqueta .ds-icono { width: 1.1em; height: 1.1em; margin-top: -0.12em; } .ds-plaqueta:hover { background: var(--amarillo, #f2c230); } .ds-plaqueta:active { transform: translateY(2px); box-shadow: 0 1px 0 rgb(255 255 255 / 0.6) inset, 0 3px 6px -2px rgb(0 0 0 / 0.6); } .ds-plaqueta:focus-visible { outline: 3px solid var(--amarillo, #f2c230); outline-offset: 5px; }"
+    },
+    {
+      "name": "Plaqueta en barra",
+      "kind": "button",
+      "refersTo": "button-barra",
+      "description": "La plaqueta invertida sobre la tira de aluminio.",
+      "html": "<div class=\"ds-alu\"><a class=\"ds-plaqueta-inv\" href=\"#\">Pedir</a></div>",
+      "css": ".ds-alu { display: inline-flex; padding: 0.6rem; background: linear-gradient(180deg, var(--alu-1, #e1e4e0), var(--alu-2, #a4aaa5)); } .ds-plaqueta-inv { display: inline-flex; align-items: center; min-height: 3rem; padding: 0.75rem 1.25rem 0.65rem; border-radius: 3px; background: var(--fieltro, #17231e); color: var(--letra, #f3efe4); font-family: var(--letras, 'Barlow Condensed', 'Arial Narrow', sans-serif); font-weight: 600; font-size: 1.2rem; letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none; line-height: 1; box-shadow: 0 1px 0 rgb(255 255 255 / 0.6) inset, 0 8px 18px -6px rgb(0 0 0 / 0.65), 0 2px 3px rgb(0 0 0 / 0.4); transition: background-color 180ms cubic-bezier(0.16, 1, 0.3, 1), color 180ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-plaqueta-inv:hover { background: var(--ranura, #0b130f); color: var(--amarillo, #f2c230); } .ds-plaqueta-inv:focus-visible { outline: 3px solid var(--amarillo, #f2c230); outline-offset: 5px; }"
+    },
+    {
+      "name": "Control de cantidad",
+      "kind": "custom",
+      "refersTo": "stepper-button",
+      "description": "Más y menos como piezas encastradas en el renglón, con el número en letra.",
+      "html": "<div class=\"ds-cantidad\"><button type=\"button\" class=\"ds-cant-btn\" disabled aria-label=\"Sacar una\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M5 12h14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3.2\" stroke-linecap=\"square\"/></svg></button><span class=\"ds-cant-num\">0</span><button type=\"button\" class=\"ds-cant-btn\" aria-label=\"Sumar una\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M5 12h14M12 5v14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3.2\" stroke-linecap=\"square\"/></svg></button></div>",
+      "css": ".ds-cantidad { display: flex; align-items: center; gap: 0.5rem; background: var(--fieltro, #17231e); padding: 0.5rem; } .ds-cant-btn { display: grid; place-items: center; width: 3rem; height: 3rem; padding: 0; border: 0; border-radius: 3px; background: none; color: var(--letra, #f3efe4); cursor: pointer; transition: color 160ms cubic-bezier(0.16, 1, 0.3, 1), transform 160ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-cant-btn svg { width: 1.6rem; height: 1.6rem; filter: drop-shadow(0 2px 1.5px rgb(0 0 0 / 0.65)); } .ds-cant-btn:hover:not(:disabled) { color: var(--amarillo, #f2c230); } .ds-cant-btn:active:not(:disabled) { transform: translateY(2px); } .ds-cant-btn:disabled { color: var(--letra-3, #8e978c); opacity: 0.45; cursor: default; } .ds-cant-btn:focus-visible { outline: 3px solid var(--amarillo, #f2c230); outline-offset: 4px; } .ds-cant-num { min-width: 2.4ch; text-align: center; font-family: var(--letras, 'Barlow Condensed', 'Arial Narrow', sans-serif); font-weight: 600; font-size: 1.9rem; line-height: 1; font-variant-numeric: tabular-nums; color: var(--letra-3, #8e978c); text-shadow: 0 0.04em 0.06em rgb(0 0 0 / 0.6); }"
+    },
+    {
+      "name": "Opciones de entrega",
+      "kind": "chip",
+      "refersTo": "option",
+      "description": "Radios convertidos en letras; la elegida se pinta en amarillo con su ranura debajo.",
+      "html": "<div class=\"ds-opciones\"><label class=\"ds-opcion\"><input type=\"radio\" name=\"ds-entrega\" checked>Retiro</label><label class=\"ds-opcion\"><input type=\"radio\" name=\"ds-entrega\">Envío</label><label class=\"ds-opcion ds-opcion--comercio\"><input type=\"radio\" name=\"ds-entrega\">Comercio</label></div>",
+      "css": ".ds-opciones { display: flex; flex-wrap: wrap; gap: 0.25rem; background: var(--fieltro, #17231e); padding: 0.5rem; } .ds-opcion { position: relative; display: grid; place-items: center; min-height: 3rem; padding: 0.4rem 1rem; border-radius: 3px; font-family: var(--letras, 'Barlow Condensed', 'Arial Narrow', sans-serif); font-weight: 600; font-size: 1.5rem; letter-spacing: 0.06em; text-transform: uppercase; line-height: 1; color: var(--letra-3, #8e978c); cursor: pointer; transition: color 160ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-opcion input { position: absolute; inset: 0; margin: 0; opacity: 0; cursor: pointer; } .ds-opcion:hover { color: var(--letra, #f3efe4); } .ds-opcion:has(input:checked) { color: var(--amarillo, #f2c230); } .ds-opcion:has(input:checked)::after { content: ''; position: absolute; left: 1rem; right: 1rem; bottom: 0.15rem; height: 3px; background: var(--amarillo, #f2c230); box-shadow: 0 2px 2px rgb(0 0 0 / 0.5); } .ds-opcion--comercio:has(input:checked) { color: var(--rojo, #e5482f); } .ds-opcion--comercio:has(input:checked)::after { background: var(--rojo, #e5482f); } .ds-opcion:has(input:focus-visible) { outline: 3px solid var(--amarillo, #f2c230); outline-offset: 3px; }"
+    },
+    {
+      "name": "Campo de dirección",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Surco hundido en el fieltro.",
+      "html": "<div class=\"ds-campo\"><label for=\"ds-dir\">¿A qué dirección te las llevamos?</label><input id=\"ds-dir\" type=\"text\" placeholder=\"Calle, número y barrio\"></div>",
+      "css": ".ds-campo { display: grid; gap: 0.5rem; padding: 1rem; background: var(--fieltro, #17231e); color: var(--letra, #f3efe4); font-family: var(--texto, 'Barlow', system-ui, sans-serif); } .ds-campo label { font-weight: 500; } .ds-campo input { width: 100%; max-width: 32rem; min-height: 3.25rem; padding: 0.75rem 1rem; border: 2px solid var(--alu-3, #6d746f); border-radius: 3px; background: var(--ranura, #0b130f); color: var(--letra, #f3efe4); font: inherit; caret-color: var(--amarillo, #f2c230); box-shadow: inset 0 2px 5px rgb(0 0 0 / 0.6); } .ds-campo input::placeholder { color: var(--letra-3, #8e978c); } .ds-campo input:focus-visible { outline: 3px solid var(--amarillo, #f2c230); outline-offset: 2px; border-color: var(--amarillo, #f2c230); }"
+    },
+    {
+      "name": "Placa",
+      "kind": "card",
+      "refersTo": "placa",
+      "description": "Tablero secundario: fieltro ranurado con marco de aluminio de 8px.",
+      "html": "<div class=\"ds-placa\"><h2 class=\"ds-titulo\">Cómo te llega</h2><p class=\"ds-cuerpo\">Avisanos por WhatsApp y te lo dejamos listo.</p></div>",
+      "css": ".ds-placa { padding: clamp(1.75rem, 5vw, 3.5rem); border: 8px solid var(--alu-2, #a4aaa5); border-radius: 3px; background-color: var(--fieltro, #17231e); background-image: repeating-linear-gradient(to bottom, transparent 0 9px, var(--ranura, #0b130f) 9px 11px, rgb(255 255 255 / 0.03) 11px 12px); box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.3), inset 0 5px 12px rgb(0 0 0 / 0.55), 0 14px 30px -12px rgb(0 0 0 / 0.7); } .ds-titulo { margin: 0 0 1.5rem; font-family: var(--letras, 'Barlow Condensed', 'Arial Narrow', sans-serif); font-weight: 600; font-size: clamp(2.4rem, 7vw, 4.75rem); line-height: 0.98; letter-spacing: 0.06em; text-transform: uppercase; color: var(--letra, #f3efe4); text-shadow: 0 0.04em 0.06em rgb(0 0 0 / 0.6); } .ds-cuerpo { margin: 0; font-family: var(--texto, 'Barlow', system-ui, sans-serif); font-size: 1.0625rem; line-height: 1.55; color: var(--letra-2, #b9bfb3); }"
+    },
+    {
+      "name": "Renglón de producto",
+      "kind": "custom",
+      "refersTo": "renglon",
+      "description": "Unidad del tablero: nombre, detalle, precio amarillo, entre ranuras de 2px. Con cantidad > 0 el nombre pasa a amarillo.",
+      "html": "<div class=\"ds-renglon\"><div><p class=\"ds-renglon-nombre\">Docena común</p><p class=\"ds-renglon-detalle\">12 prepizzas de 30 cm</p></div><p class=\"ds-renglon-precio\">$ 6.000</p></div>",
+      "css": ".ds-renglon { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 0.5rem 2.5rem; padding: 1rem 0.5rem; background: var(--fieltro, #17231e); border-top: 2px solid var(--ranura, #0b130f); border-bottom: 2px solid var(--ranura, #0b130f); box-shadow: 0 1px 0 rgb(255 255 255 / 0.04); } .ds-renglon p { margin: 0; } .ds-renglon-nombre, .ds-renglon-precio { font-family: var(--letras, 'Barlow Condensed', 'Arial Narrow', sans-serif); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; line-height: 1; text-shadow: 0 0.04em 0.06em rgb(0 0 0 / 0.6); font-variant-numeric: tabular-nums; } .ds-renglon-nombre { font-size: 2rem; color: var(--letra, #f3efe4); } .ds-renglon-detalle { margin-top: 0.4rem !important; font-family: var(--texto, 'Barlow', system-ui, sans-serif); font-size: 0.95rem; line-height: 1.35; color: var(--letra-2, #b9bfb3); } .ds-renglon-precio { font-size: 1.85rem; color: var(--amarillo, #f2c230); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "El tablero de letras de la familia",
+    "overview": "El sitio entero es un tablero de fieltro ranurado, el que se cuelga en el mostrador y se actualiza a mano. La pantalla es el tablero: un marco de aluminio cepillado fijo recorre los cuatro bordes del viewport y el fieltro verde negro con ranuras horizontales es el suelo de toda la página. Encima sólo hay letras plásticas condensadas, en mayúscula, apenas torcidas como cuando se encastran a mano, más un único cartelito claro que es la acción.\n\nLa densidad es la de un menú de pared: renglones separados por ranuras, precio a la derecha, controles de cantidad que son más letras sobre el mismo renglón. No hay tarjetas flotantes ni fotos; las secciones secundarias son tableros más chicos (placas) con su propio marco de aluminio. El movimiento es material: cuando un número cambia, sólo las letras que cambiaron caen y se encastran una por una.\n\nRechazo confirmado en el contrato de dirección: el hero con foto, la grilla de tarjetas y el botón rojo de cadena.",
+    "keyCharacteristics": [
+      "Fieltro oscuro con ranuras repetidas cada `--paso` como fondo de toda la página.",
+      "Marco de aluminio fijo en los bordes del viewport; placas con marco propio para las secciones.",
+      "Letras condensadas en mayúscula, colocadas letra por letra con desalineado determinista.",
+      "Amarillo y rojo existen como letras de color, no como superficies.",
+      "Una sola superficie clara sobre el fieltro: la plaqueta de WhatsApp.",
+      "Encastre letra por letra como única animación de contenido."
+    ],
+    "rules": [
+      {
+        "name": "La Regla de la Letra de Color",
+        "body": "Amarillo y rojo se aplican a letras, trazos y subrayados, nunca a fondos de sección o tarjeta. La única superficie amarilla es el hover de la plaqueta.",
+        "section": "colors"
+      },
+      {
+        "name": "La Regla del Rojo Mayorista",
+        "body": "El rojo señala el canal de comercios (y la salsa). No se usa para la acción de pedido ni para alertas genéricas.",
+        "section": "colors"
+      },
+      {
+        "name": "La Regla de la Letra Puesta a Mano",
+        "body": "Todo texto en la condensada se compone letra por letra (componente de letras): cada letra lleva un desplazamiento vertical de ±0.025em y una rotación de ±1.2°, derivados de un ruido determinista por posición y carácter, y una sombra corta hacia abajo. Nunca aleatorio en cada carga; nunca recto.",
+        "section": "typography"
+      },
+      {
+        "name": "La Regla de las Dos Voces",
+        "body": "Mayúscula condensada para lo que está en el tablero (nombres, precios, cantidades, títulos, acciones); Barlow en caja baja para lo que explica. No se mezclan dentro de un mismo elemento.",
+        "section": "typography"
+      },
+      {
+        "name": "La Regla de la Ranura",
+        "body": "Toda lista se apoya en ranuras: borde superior e inferior de 2px en `ranura` entre renglones, filas de lista, condiciones y entrega. Nada flota sin una ranura debajo; la barra fija se ancla al marco (`left/right/bottom: marco`).",
+        "section": "layout"
+      },
+      {
+        "name": "La Regla de la Luz Cenital",
+        "body": "Toda sombra es negra y cae hacia abajo (y positivo); lo hundido es interior arriba. La única excepción es la barra fija, que se apoya en el marco inferior y proyecta hacia arriba sobre el contenido que tapa. Una sombra que no se explica por esa luz no pertenece al tablero.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do componer todo texto de tablero con el componente de letras, para heredar desalineado, sombra y encastre.",
+      "Do separar cada renglón o fila con ranuras de 2px en `ranura`.",
+      "Do reservar la plaqueta para la acción de WhatsApp; ninguna otra acción usa superficie clara sobre el fieltro.",
+      "Do usar el amarillo para lo elegido, lo cobrado y el foco; el rojo sólo para el canal de comercios.",
+      "Do poner las secciones nuevas dentro de una placa con marco de aluminio de 8px.",
+      "Do mantener los controles del pedido en 3rem o más y ningún objetivo táctil por debajo de 2.75rem."
+    ],
+    "donts": [
+      "Don't armar hero con foto, grilla de tarjetas o botón rojo de cadena.",
+      "Don't pintar fondos de sección o tarjeta en amarillo o rojo.",
+      "Don't usar degradés de color decorativos; los únicos degradés son las ranuras del fieltro y el aluminio cepillado.",
+      "Don't redondear más de 3px ni usar formas de píldora.",
+      "Don't escribir texto corrido en la condensada mayúscula, ni rótulos de tablero en Barlow caja baja.",
+      "Don't usar sombras desplazadas en diagonal ni brillos de color; hacia arriba sólo la barra fija."
+    ]
+  }
+}
