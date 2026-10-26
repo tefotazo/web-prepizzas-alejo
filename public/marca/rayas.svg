@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 70">
+  <defs>
+    <filter id="borde" x="-10%" y="-40%" width="120%" height="180%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.08 0.4" numOctaves="2" seed="2" result="ruido"/>
+      <feDisplacementMap in="SourceGraphic" in2="ruido" scale="5" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+  <g filter="url(#borde)" fill="#f10516">
+    <path d="M4 14 L104 6 L100 13 L10 19 Z"/>
+    <path d="M18 38 L116 26 L112 34 L22 43 Z"/>
+    <path d="M8 62 L84 52 L80 58 L12 66 Z"/>
+  </g>
+</svg>

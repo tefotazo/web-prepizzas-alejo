@@ -1,17 +1,37 @@
 ---
+// Íconos de línea (Lucide) y de marca (simple-icons), todos en currentColor.
 import { whatsapp, instagram } from './iconos';
+import carrito from 'lucide-static/icons/shopping-cart.svg?raw';
+import megafono from 'lucide-static/icons/megaphone.svg?raw';
+import manos from 'lucide-static/icons/handshake.svg?raw';
+import calendario from 'lucide-static/icons/calendar-days.svg?raw';
+import gente from 'lucide-static/icons/users.svg?raw';
+import local from 'lucide-static/icons/store.svg?raw';
+import campana from 'lucide-static/icons/concierge-bell.svg?raw';
+import sumar from 'lucide-static/icons/circle-plus.svg?raw';
+import torta from 'lucide-static/icons/cake.svg?raw';
+import check from 'lucide-static/icons/check.svg?raw';
+import caja from 'lucide-static/icons/package.svg?raw';
+import mas from 'lucide-static/icons/plus.svg?raw';
+import menos from 'lucide-static/icons/minus.svg?raw';
+import ubicacion from 'lucide-static/icons/map-pin.svg?raw';
+import envio from 'lucide-static/icons/truck.svg?raw';
+import reloj from 'lucide-static/icons/clock.svg?raw';
+
+const lineas = { carrito, megafono, manos, calendario, gente, local, campana, sumar, torta, check, caja, mas, menos, ubicacion, envio, reloj };
+const marcas = { whatsapp, instagram };
+
+export type NombreIcono = keyof typeof lineas | keyof typeof marcas;
 
 interface Props {
-  nombre: 'whatsapp' | 'instagram' | 'mas' | 'menos';
+  nombre: NombreIcono;
   class?: string;
 }
 const { nombre, class: clase } = Astro.props;
-const marcas = { whatsapp, instagram };
+const trazo = nombre in lineas ? lineas[nombre as keyof typeof lineas].replace(/^[\s\S]*?<svg[^>]*>|<\/svg>\s*$/g, '') : '';
 ---
-{nombre === 'whatsapp' || nombre === 'instagram' ? (
-  <svg class:list={['icono', clase]} viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d={marcas[nombre]} /></svg>
+{nombre in marcas ? (
+  <svg class:list={['icono', clase]} viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d={marcas[nombre as keyof typeof marcas]} /></svg>
 ) : (
-  <svg class:list={['icono', clase]} viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-    <path d={nombre === 'mas' ? 'M5 12h14M12 5v14' : 'M5 12h14'} fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="square" />
-  </svg>
+  <svg class:list={['icono', clase]} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" set:html={trazo} />
 )}

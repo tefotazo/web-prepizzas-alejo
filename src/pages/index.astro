@@ -1,693 +1,816 @@
 ---
 import Base from '../layouts/Base.astro';
-import Letras from '../components/Letras.astro';
 import Icono from '../components/Icono.astro';
-import Prepizza from '../components/Prepizza.astro';
-import { negocio, formatoPrecio, linkWhatsApp } from '../data/negocio';
+import { negocio, formatoPrecio, precioPedido, precioSuelto, linkWhatsApp } from '../data/negocio';
 
-const rinde = negocio.productos.find((p) => p.id === negocio.productoRinde) ?? negocio.productos[0];
-const porUnidad = formatoPrecio(Math.round(rinde.precio / rinde.unidades));
-const consulta = linkWhatsApp(`Hola! Quería consultar qué prepizzas tienen hoy.`);
-const mayorista = linkWhatsApp(`Hola! Tengo un comercio y quiero recibir la lista de precios mayoristas.`);
+const [suelto, ...promos] = negocio.promos;
+const consulta = linkWhatsApp('Hola! Quería hacer un pedido de pre-pizzas.');
+const mayorista = linkWhatsApp('Hola! Quiero consultar precios especiales por cantidad de pre-pizzas (para un evento o negocio).');
+const precios = JSON.stringify(negocio.promos);
 const anio = new Date().getFullYear();
 ---
 <Base
-  titulo={`${negocio.nombre} · Prepizzas caseras en ${negocio.barrio}`}
-  descripcion={`Prepizzas caseras hechas por ${negocio.familia}. Pedí por WhatsApp: retiro, envío a domicilio y venta a comercios.`}
+  titulo={`${negocio.nombre} · Pedí por WhatsApp`}
+  descripcion={`Pre-pizzas caseras con salsa, sin conservantes. Paquete de 2 a ${formatoPrecio(suelto.precio)}, promos por cantidad y precios especiales para eventos y negocios. Pedí al ${negocio.telefono}.`}
 >
-  <main>
-    <!-- Tablero principal: lo que hay hoy y el pedido -->
-    <section class="tablero" aria-labelledby="hoy-hay">
-      <div class="contenedor">
-        <header class="rotulos">
-          <Letras texto={negocio.nombre} as="p" class="rotulo rotulo--marca" />
-          <Letras texto={negocio.horario} as="p" class="rotulo" />
-        </header>
+  <header class="cabecera contenedor">
+    <nav class="cabecera__nav" aria-label="Secciones">
+      <a href="#precios">Precios</a>
+      <a href="#mayor">Por mayor</a>
+    </nav>
+    <a class="cabecera__tel" href={consulta} target="_blank" rel="noopener">
+      <Icono nombre="whatsapp" />
+      <span class="cartel">{negocio.telefono}</span>
+    </a>
+  </header>
 
-        <div class="tablero__grilla">
-        <div class="tablero__titular">
-          <h1 class="hoy-hay" id="hoy-hay">
-            <span class="sr-only">Hoy hay prepizzas caseras</span>
-            <span aria-hidden="true"><Letras texto="Hoy" class="hoy" /> <Letras texto="hay" class="hay" /></span>
-          </h1>
-          <p class="bajada">Prepizzas caseras, amasadas por {negocio.familia}. Elegí cuántas querés y te armamos el mensaje de WhatsApp.</p>
+  <main>
+    <!-- Portada: el titular del flyer y el pedido funcionando -->
+    <section class="portada contenedor" aria-labelledby="titular">
+      <h1 class="titular" id="titular">
+        <span class="titular__venta"><img class="rayas" src="/marca/rayas.svg" alt="" width="120" height="70" /><span class="pincel">Venta de</span></span>
+        <span class="titular__pre pincel">Pre-pizzas</span>
+        <span class="titular__caseras guion">Caseras</span>
+      </h1>
+
+      <p class="lema guion">¡Ricas, prácticas y siempre frescas!</p>
+
+      <figure class="portada__foto">
+        <img src="/fotos/par.webp" alt="Dos paquetes de pre-pizzas con salsa, en bolsa transparente" width="710" height="278" />
+        <p class="sello sello--rayas portada__sello cartel">
+          <span class="sello__linea">{suelto.paquetes} paquete</span>
+          <span class="sello__sub">({negocio.paquete.prepizzas} pre-pizzas)</span>
+          <span class="sello__precio">{formatoPrecio(suelto.precio)}</span>
+        </p>
+        <figcaption class="portada__nota guion">La mejor calidad, siempre</figcaption>
+      </figure>
+
+      <form class="pedido panel" id="pedido" data-precios={precios} data-wa={`https://wa.me/${negocio.whatsapp}`} data-retiro={negocio.direccionRetiro}>
+        <h2 class="banda cartel"><Icono nombre="carrito" />Armá tu pedido</h2>
+
+        <div class="pedido__cantidad">
+          <label class="pedido__rotulo cartel" for="paquetes">¿Cuántos paquetes?</label>
+          <div class="stepper">
+            <button type="button" class="stepper__boton" data-accion="menos" aria-label="Un paquete menos" disabled><Icono nombre="menos" /></button>
+            <input class="stepper__numero cartel" id="paquetes" name="paquetes" type="number" inputmode="numeric" min="1" max="99" value="1" />
+            <button type="button" class="stepper__boton" data-accion="mas" aria-label="Un paquete más"><Icono nombre="mas" /></button>
+          </div>
+          <p class="pedido__unidades" data-unidades>= {negocio.paquete.prepizzas} pre-pizzas</p>
         </div>
 
-        <form class="pedido" id="pedido" data-mensaje-vacio="Hola! Quería consultar qué prepizzas tienen hoy." data-retiro={negocio.direccionRetiro} data-wa={`https://wa.me/${negocio.whatsapp}`}>
-          <ul class="renglones" role="list">
-            {negocio.productos.map((p) => (
-              <li class="renglon" data-producto={p.id} data-nombre={p.nombre} data-precio={p.precio}>
-                <div class="renglon__que">
-                  <Letras texto={p.nombre} as="h2" class="renglon__nombre" />
-                  <p class="renglon__detalle">{p.detalle}</p>
-                </div>
-                <div class="renglon__precio">
-                  <Letras texto={formatoPrecio(p.precio)} class="precio" />
-                  <span class="subtotal letras" data-subtotal aria-hidden="true"></span>
-                </div>
-                <div class="cantidad" role="group" aria-label={`Cantidad de ${p.nombre}`}>
-                  <button type="button" class="cantidad__boton" data-accion="menos" aria-label={`Sacar una ${p.nombre}`} disabled>
-                    <Icono nombre="menos" />
-                  </button>
-                  <span class="cantidad__numero letras" data-cantidad aria-hidden="true"><span class="letra">0</span></span>
-                  <button type="button" class="cantidad__boton" data-accion="mas" aria-label={`Sumar una ${p.nombre}`}>
-                    <Icono nombre="mas" />
-                  </button>
-                </div>
-              </li>
-            ))}
+        <ul class="escalera" role="list" aria-label="Precios por cantidad">
+          {negocio.promos.map((p) => (
+            <li>
+              <button type="button" class="escalon" data-paquetes={p.paquetes} aria-pressed={p.paquetes === 1 ? 'true' : 'false'}>
+                <span class="escalon__cant cartel">{p.paquetes} {p.paquetes === 1 ? 'paquete' : 'paquetes'}</span>
+                <span class="escalon__precio cartel">{formatoPrecio(p.precio)}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+
+        <fieldset class="entrega">
+          <legend class="pedido__rotulo cartel">Entrega</legend>
+          <div class="entrega__opciones">
+            <label class="opcion">
+              <input type="radio" name="entrega" value="retiro" checked />
+              <span class="cartel">Retiro</span>
+            </label>
+            <label class="opcion">
+              <input type="radio" name="entrega" value="envio" />
+              <span class="cartel">Envío</span>
+            </label>
+          </div>
+          <p class="pedido__nota" data-nota-retiro>Pasás a buscar por {negocio.direccionRetiro}, {negocio.barrio}.</p>
+          <div class="campo" data-direccion hidden>
+            <label for="direccion">¿A qué dirección te las llevamos?</label>
+            <input id="direccion" name="direccion" type="text" autocomplete="street-address" placeholder="Calle, número y barrio" />
+            <p class="pedido__nota">{negocio.envio}</p>
+          </div>
+        </fieldset>
+
+        <div class="campo campo--dia">
+          <label for="dia">¿Para qué día?</label>
+          <input id="dia" name="dia" type="date" />
+          <p class="pedido__nota"><Icono nombre="calendario" /> Recordá encargar con anticipación.</p>
+        </div>
+
+        <div class="total">
+          <div class="total__cifra">
+            <span class="total__rotulo cartel">Total</span>
+            <span class="total__monto sello cartel" data-total>{formatoPrecio(precioPedido(1))}</span>
+            <span class="total__ahorro guion" data-ahorro hidden></span>
+          </div>
+          <p class="pedido__nota total__estimado" data-estimado hidden>Para más de {promos[promos.length - 1].paquetes} paquetes el total es estimado: te lo confirmamos por WhatsApp.</p>
+          <a class="boton total__boton" href={consulta} data-cta-pedido target="_blank" rel="noopener">
+            <Icono nombre="whatsapp" />
+            Pedir por WhatsApp
+          </a>
+        </div>
+        <p class="sr-only" aria-live="polite" data-anuncio></p>
+      </form>
+    </section>
+
+    <!-- Precios: venta por menor y promociones, como los dos recuadros del flyer -->
+    <section class="precios contenedor" id="precios" aria-label="Precios">
+      <article class="panel menor">
+        <h2 class="banda cartel"><Icono nombre="carrito" />Venta por menor</h2>
+        <p class="menor__detalle">{negocio.paquete.detalle}</p>
+        <div class="menor__cuerpo">
+          <figure class="menor__foto">
+            <img src="/fotos/izq.webp" alt="Un paquete con dos pre-pizzas" width="372" height="278" loading="lazy" />
+            <p class="sello sello--rayas menor__sello cartel">
+              <span class="sello__linea">{suelto.paquetes} paquete</span>
+              <span class="sello__sub">({negocio.paquete.prepizzas} pre-pizzas)</span>
+              <span class="sello__precio">{formatoPrecio(suelto.precio)}</span>
+            </p>
+          </figure>
+          <ul class="tildes" role="list">
+            {negocio.caracteristicas.map((c) => <li><Icono nombre="check" />{c}</li>)}
           </ul>
+        </div>
 
-          <fieldset class="entrega">
-            <legend class="sr-only">Forma de entrega</legend>
-            <Letras texto="Entrega" class="entrega__titulo" />
-            <div class="entrega__opciones">
-              <label class="opcion">
-                <input type="radio" name="entrega" value="retiro" checked />
-                <Letras texto="Retiro" />
-              </label>
-              <label class="opcion">
-                <input type="radio" name="entrega" value="envio" />
-                <Letras texto="Envío" />
-              </label>
-              <label class="opcion opcion--comercio">
-                <input type="radio" name="entrega" value="comercio" />
-                <Letras texto="Comercio" />
-              </label>
-            </div>
-            <p class="entrega__nota" data-nota-retiro>Pasás a buscar por {negocio.direccionRetiro}.</p>
-            <p class="entrega__nota" data-nota-comercio hidden>Precio por mayor para almacenes, kioscos y rotiserías. {negocio.mayorista.minimo}. <a href="#comercios">Ver condiciones</a>.</p>
-            <div class="entrega__direccion" data-direccion hidden>
-              <label for="direccion">¿A qué dirección te las llevamos?</label>
-              <input id="direccion" name="direccion" type="text" autocomplete="street-address" placeholder="Calle, número y barrio" />
-              <p class="entrega__nota">{negocio.envio}</p>
-            </div>
-          </fieldset>
+      </article>
 
-          <div class="total">
-            <div class="total__cifra">
-              <span class="total__vacio" data-vacio>Sumá con el + lo que quieras llevar</span>
-              <span class="total__lleno" data-lleno hidden>
-                <Letras texto="Total" class="total__titulo" />
-                <span class="total__monto letras" data-total aria-hidden="true"></span>
+      <article class="panel promos">
+        <h2 class="banda banda--b cartel"><Icono nombre="megafono" />Promociones</h2>
+        <ul class="promos__lista" role="list">
+          {promos.map((p) => (
+            <li class="promo">
+              <span class="promo__cant cartel">{p.paquetes}</span>
+              <span class="promo__que">
+                <span class="cartel">Paquetes</span>
+                <span class="promo__sub">({p.paquetes * negocio.paquete.prepizzas} pre-pizzas)</span>
               </span>
+              <span class="sello promo__precio cartel">{formatoPrecio(p.precio)}</span>
+              <button type="button" class="promo__elegir" data-elegir={p.paquetes}>
+                Llevar esta promo
+                <span class="promo__ahorro">ahorrás {formatoPrecio(precioSuelto(p.paquetes) - p.precio)}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+        <p class="promos__lema guion"><img class="rayas rayas--izq" src="/marca/rayas.svg" alt="" width="120" height="70" />¡Más cantidad, mejor precio!<img class="rayas" src="/marca/rayas.svg" alt="" width="120" height="70" /></p>
+      </article>
+    </section>
+
+    <!-- Venta al por mayor -->
+    <section class="contenedor" id="mayor" aria-labelledby="mayor-titulo">
+      <article class="panel mayor">
+        <h2 class="banda banda--b cartel" id="mayor-titulo"><Icono nombre="manos" />Venta al por mayor</h2>
+        <div class="mayor__grilla">
+          <div>
+            <p class="mayor__ideal">Ideal para <span class="guion">eventos</span> y <span class="guion">negocios</span></p>
+            <ul class="tildes mayor__rubros" role="list">
+              {negocio.mayorista.rubros.map((r) => (
+                <li><Icono nombre={r.icono} class="mayor__rubro" /><Icono nombre="check" />{r.texto}</li>
+              ))}
+            </ul>
+          </div>
+          <div class="mayor__foto">
+            <div class="pila" role="img" aria-label="Paquetes de pre-pizzas apilados para pedidos grandes">
+              <img class="pila__bolsa pila__bolsa--1" src="/fotos/izq.webp" alt="" width="372" height="278" loading="lazy" />
+              <img class="pila__bolsa pila__bolsa--2" src="/fotos/der.webp" alt="" width="380" height="278" loading="lazy" />
             </div>
-            <a class="plaqueta plaqueta--grande" href={consulta} data-cta-pedido target="_blank" rel="noopener">
-              <Icono nombre="whatsapp" />
-              <span data-cta-texto>Consultar por WhatsApp</span>
+            <a class="sello mayor__sello cartel" href={mayorista} target="_blank" rel="noopener">
+              <Icono nombre="caja" class="mayor__caja" />
+              <span>
+                <span class="sello__linea">Consultá por precios especiales</span>
+                <span class="sello__sub">por cantidad <Icono nombre="whatsapp" class="mayor__wa" /></span>
+              </span>
             </a>
           </div>
-          <p class="sr-only" aria-live="polite" data-anuncio></p>
-        </form>
-
         </div>
-      </div>
+      </article>
     </section>
 
-    <!-- La docena, dibujada con las letras del tablero -->
-    <section class="seccion rinde" aria-labelledby="rinde-titulo">
-      <div class="contenedor"><div class="placa">
-        <h2 class="titulo" id="rinde-titulo">
-          <Letras texto={`${rinde.unidades} prepizzas por ${formatoPrecio(rinde.precio)}`} />
-        </h2>
-        <div class="docena" aria-hidden="true" data-docena>
-          {Array.from({ length: rinde.unidades }).map((_, i) => <span class="letra docena__pieza"><Prepizza giro={(i * 47) % 360} /></span>)}
-        </div>
-        <p class="rinde__cuenta">
-          <Letras texto={`= ${porUnidad} cada una`} class="rinde__unidad" />
-        </p>
-        <p class="rinde__texto">{rinde.nombre}: {rinde.detalle}. {negocio.consejo}</p>
-      </div></div>
-    </section>
-
-    <!-- Cómo llega -->
-    <section class="seccion" aria-labelledby="llega-titulo">
-      <div class="contenedor"><div class="placa">
-        <h2 class="titulo" id="llega-titulo"><Letras texto="Cómo te llega" /></h2>
-        <dl class="lista">
-          <div class="lista__fila">
-            <dt><Letras texto="Retiro" class="lista__clave" /></dt>
-            <dd>
-              <p class="lista__dato">{negocio.direccionRetiro}, {negocio.barrio}</p>
-              <p>{negocio.horario}. Avisanos por WhatsApp y te lo dejamos listo.</p>
-            </dd>
-          </div>
-          <div class="lista__fila">
-            <dt><Letras texto="Envío" class="lista__clave" /></dt>
-            <dd>
-              <p class="lista__dato">{negocio.zonasEnvio.join(' · ')}</p>
-              <p>{negocio.envio}</p>
-            </dd>
-          </div>
-          <div class="lista__fila">
-            <dt><Letras texto="Comercios" class="lista__clave" /></dt>
-            <dd>
-              <p class="lista__dato">Venta por mayor</p>
-              <p>Para almacenes, kioscos y rotiserías. <a href="#comercios">Ver condiciones</a>.</p>
-            </dd>
-          </div>
-        </dl>
-      </div></div>
-    </section>
-
-    <!-- Comercios -->
-    <section class="seccion comercios" id="comercios" aria-labelledby="comercios-titulo">
-      <div class="contenedor"><div class="placa">
-        <h2 class="titulo titulo--rojo" id="comercios-titulo">
-          <Letras texto="¿Tenés almacén, kiosco o rotisería?" />
-        </h2>
-        <div class="comercios__grilla">
-        <ul class="condiciones" role="list">
-          <li><Letras texto={negocio.mayorista.minimo} /></li>
-          <li><Letras texto={negocio.mayorista.entrega} /></li>
-          <li><Letras texto={negocio.mayorista.precio} /></li>
-        </ul>
-        <a class="plaqueta" href={mayorista} target="_blank" rel="noopener">
-          <Icono nombre="whatsapp" />
-          Precios mayoristas
-        </a>
-        </div>
-      </div></div>
-    </section>
-
-    <!-- La familia -->
-    <section class="seccion familia" aria-labelledby="familia-titulo">
-      <div class="contenedor familia__grilla">
-        <h2 class="titulo" id="familia-titulo"><Letras texto="Las amasamos nosotros" /></h2>
-        <div class="familia__texto">
-          {negocio.historia.map((parrafo) => <p>{parrafo}</p>)}
-        </div>
-      </div>
+    <!-- Cierre: el número grande, como el pie del flyer -->
+    <section class="cierre contenedor" aria-labelledby="cierre-titulo">
+      <h2 class="sr-only" id="cierre-titulo">Hacé tu pedido</h2>
+      <a class="cierre__llamada" href={consulta} target="_blank" rel="noopener">
+        <span class="cierre__wa"><Icono nombre="whatsapp" /></span>
+        <span class="cierre__linea cartel">
+          <span class="cierre__texto">Hacé tu pedido al</span>
+          <span class="cierre__flecha" aria-hidden="true"></span>
+          <span class="cierre__numero">{negocio.telefono}</span>
+        </span>
+      </a>
+      <p class="banda cartel cierre__aviso"><Icono nombre="calendario" />Recordá encargar con anticipación, por favor</p>
+      <p class="cierre__espera guion">¡Te esperamos!</p>
     </section>
   </main>
 
   <footer class="pie">
     <div class="contenedor pie__grilla">
-      <Letras texto={negocio.nombre} as="p" class="pie__marca" />
-      <div class="pie__datos">
-        <p>{negocio.direccionRetiro}, {negocio.barrio}</p>
-        <p>{negocio.horario}</p>
-      </div>
-      <ul class="pie__links" role="list">
-        <li>
-          <a href={consulta} target="_blank" rel="noopener"><Icono nombre="whatsapp" /> WhatsApp</a>
-        </li>
-        {negocio.instagram && (
-          <li>
-            {negocio.ejemplo ? (
-              <span class="pie__ejemplo"><Icono nombre="instagram" /> @{negocio.instagram} (ejemplo)</span>
-            ) : (
-              <a href={`https://instagram.com/${negocio.instagram}`} target="_blank" rel="noopener"><Icono nombre="instagram" /> @{negocio.instagram}</a>
-            )}
-          </li>
-        )}
+      <p class="pie__marca cartel">{negocio.nombre}</p>
+      <ul class="pie__datos" role="list">
+        <li><Icono nombre="ubicacion" />Retiro: {negocio.direccionRetiro}, {negocio.barrio}</li>
+        <li><Icono nombre="envio" />Envío: {negocio.zonasEnvio.join(' · ')}</li>
+        <li><Icono nombre="reloj" />{negocio.horario}</li>
       </ul>
       <p class="pie__legal">© {anio} {negocio.nombre}</p>
     </div>
   </footer>
 
-  <!-- Barra fija con el pedido, cuando el tablero queda arriba -->
+  <!-- Barra fija con el pedido, cuando el total queda fuera de pantalla -->
   <div class="barra" data-barra hidden>
-    <span class="barra__resumen letras" data-barra-resumen></span>
-    <a class="plaqueta barra__cta" href={consulta} data-cta-pedido target="_blank" rel="noopener">
+    <span class="barra__resumen cartel" data-barra-resumen></span>
+    <a class="boton barra__cta" href={consulta} data-cta-pedido target="_blank" rel="noopener">
       <Icono nombre="whatsapp" />
-      <span data-barra-cta>Consultar</span>
+      Pedir
     </a>
   </div>
 </Base>
 
 <script>
-  import { iniciarPedido, iniciarDocena } from '../scripts/pedido';
+  import { iniciarPedido } from '../scripts/pedido';
   iniciarPedido();
-  iniciarDocena();
 </script>
 
 <style>
-  /* ---------- Tablero principal ---------- */
-  .tablero {
-    min-height: 100svh;
-    padding-block: calc(var(--marco) + clamp(1.25rem, 3.5vh, 2.5rem)) clamp(3rem, 8vh, 5rem);
-  }
-
-  .rotulos {
+  /* ---------- Cabecera ---------- */
+  .cabecera {
     display: flex;
-    flex-wrap: wrap;
+    align-items: center;
     justify-content: space-between;
-    gap: 0.5rem 2rem;
+    gap: 1rem;
+    padding-block: 0.75rem;
   }
 
-  .rotulo {
-    margin: 0;
-    font-size: clamp(0.95rem, 1.6vw, 1.15rem);
-    letter-spacing: 0.16em;
-    color: var(--letra-2);
-  }
+  .cabecera__nav { display: flex; gap: 0.25rem 1.5rem; }
 
-  .rotulo--marca { color: var(--letra); }
-
-  .hoy-hay {
-    margin: clamp(1.25rem, 4vh, 2.5rem) 0 0;
-    font-size: clamp(4rem, min(20vw, 21vh), 11.5rem);
-    line-height: 0.86;
+  .cabecera__nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
     font-weight: 600;
+    color: var(--tiza-2);
+    text-decoration: none;
   }
 
-  .hoy-hay :global(.letras) { letter-spacing: 0.03em; }
-  .hoy-hay :global(.hay) { color: var(--amarillo); }
+  .cabecera__nav a:hover { color: var(--tiza); text-decoration: underline; text-decoration-color: var(--rojo); }
 
-  .bajada {
-    max-width: 34rem;
-    margin: clamp(0.9rem, 2.5vh, 1.5rem) 0 clamp(1.5rem, 4vh, 2.5rem);
-    color: var(--letra-2);
-    font-size: clamp(1rem, 1.4vw, 1.15rem);
+  .cabecera__tel {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    font-size: 1.35rem;
+    text-decoration: none;
   }
 
-  .pedido { margin: 0; }
+  .cabecera__tel :global(.icono) { width: 1.3rem; height: 1.3rem; color: var(--rojo-claro); }
 
-  @media (min-width: 1100px) {
-    .tablero__grilla {
-      display: grid;
-      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
-      gap: clamp(3rem, 5vw, 6rem);
-      align-items: start;
-      margin-top: clamp(1.5rem, 4vh, 3rem);
-    }
-    .hoy-hay {
-      margin-top: 0;
-      font-size: clamp(8rem, min(13vw, 26vh), 13.5rem);
-      line-height: 0.82;
-    }
-    .hoy-hay :global(.letras) { display: block; }
-    .hoy-hay :global(.hay) { margin-top: 0.06em; }
-    .bajada { margin-bottom: 0; max-width: 24rem; }
-    .renglon { padding-block: clamp(0.7rem, 1.6vh, 1rem); gap: 0.25rem 2rem; }
-    .renglon__nombre { font-size: clamp(1.5rem, 2.2vw, 2rem); }
-    .renglon__detalle { margin-top: 0.25rem; }
-    .renglon__precio { font-size: clamp(1.4rem, 2vw, 1.85rem); }
+  /* ---------- Portada ---------- */
+  .portada {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: 'titular' 'lema' 'foto' 'pedido';
+    padding-top: clamp(0.5rem, 2vh, 1.5rem);
+    padding-bottom: clamp(3rem, 8vw, 5rem);
   }
 
-  .renglones {
+  .titular {
+    grid-area: titular;
+    display: grid;
+    justify-items: start;
+    margin: 0;
+    font-weight: 400;
+    rotate: -3deg;
+    transform-origin: left center;
+  }
+
+  .titular__venta {
+    position: relative;
+    margin-left: 0.9em;
+    font-size: clamp(2rem, 7.6vw, 4.2rem);
+  }
+
+  .rayas {
+    position: absolute;
+    right: 100%;
+    top: 0.05em;
+    width: 0.95em;
+    height: auto;
+    margin-right: 0.12em;
+    rotate: 8deg;
+  }
+
+  /* La letra del flyer va inclinada hacia adelante */
+  .titular__venta .pincel,
+  .titular__pre { display: inline-block; transform: skewX(-9deg); }
+
+  .titular__pre {
+    font-size: clamp(3.3rem, 15.4vw, 8.6rem);
+    padding-bottom: 0.1em;
+    background: url('/marca/trazo.svg') left bottom / 100% 0.2em no-repeat;
+  }
+
+  .titular__caseras {
+    margin: -0.18em 0 0 0.9em;
+    color: var(--rojo);
+    font-size: clamp(3.2rem, 14vw, 7.6rem);
+    padding-bottom: 0.08em;
+    background: url('/marca/trazo.svg') 0.2em bottom / 92% 0.14em no-repeat;
+    text-shadow: 0 4px 12px rgb(0 0 0 / 0.5);
+  }
+
+  .lema {
+    grid-area: lema;
+    justify-self: end;
+    max-width: 11em;
+    margin: 0.35em 0 0.2em;
+    font-size: clamp(1.35rem, 4.6vw, 2rem);
+    text-align: center;
+    rotate: -9deg;
+  }
+
+  .portada__foto {
+    grid-area: foto;
+    position: relative;
+    margin: clamp(0.5rem, 2vw, 1rem) calc(var(--gutter) * -0.5) 0;
+  }
+
+  .portada__foto img { width: 100%; height: auto; }
+
+  .portada__sello {
+    position: absolute;
+    left: 6%;
+    bottom: -1.5rem;
+    margin: 0;
+    font-size: clamp(0.8rem, 2.6vw, 1.05rem);
+  }
+
+  .portada__nota {
+    position: absolute;
+    right: calc(var(--gutter) * 0.5);
+    bottom: -0.6em;
+    max-width: 90%;
+    font-size: clamp(1.05rem, 3.6vw, 1.6rem);
+    rotate: -10deg;
+    padding-bottom: 0.1em;
+    background: url('/marca/trazo.svg') center bottom / 100% 0.2em no-repeat;
+  }
+
+  @media (max-width: 999px) {
+    .portada__foto { text-align: right; }
+    .portada__nota { position: static; display: inline-block; max-width: none; margin: 0.1rem calc(var(--gutter) * 0.5) 0 0; }
+    .portada__sello { left: 9%; bottom: 2.6rem; }
+  }
+
+  /* ---------- Pedido ---------- */
+  .pedido {
+    grid-area: pedido;
+    display: grid;
+    gap: 1.1rem;
+    margin-top: clamp(1.75rem, 5vw, 2.5rem);
+    padding-top: 0;
+  }
+
+  .pedido > .banda { margin: -1.15em 0 0 -1.25rem; justify-self: start; }
+
+  .pedido__rotulo {
+    font-size: 1.3rem;
+    color: var(--tiza-2);
+    padding: 0;
+  }
+
+  .pedido__cantidad {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 0.25rem 1rem;
+  }
+
+  .pedido__unidades { grid-column: 2; margin: 0; text-align: center; color: var(--tiza-2); font-size: 0.95rem; }
+
+  .stepper { display: flex; align-items: center; gap: 0.25rem; }
+
+  .stepper__boton {
+    display: grid;
+    place-items: center;
+    width: 3.25rem;
+    height: 3.25rem;
+    padding: 0;
+    border: 2px solid var(--rojo);
+    border-radius: 50%;
+    background: none;
+    color: var(--tiza);
+    cursor: pointer;
+    transition: background-color 160ms var(--ease), transform 160ms var(--ease);
+  }
+
+  .stepper__boton :global(.icono) { width: 1.5rem; height: 1.5rem; stroke-width: 3; }
+  .stepper__boton:hover:not(:disabled) { background: var(--rojo); }
+  .stepper__boton:active:not(:disabled) { transform: scale(0.92); }
+  .stepper__boton:disabled { border-color: var(--linea); color: var(--tiza-3); cursor: default; }
+
+  .stepper__numero {
+    width: 2.2ch;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--tiza);
+    font-size: 3.4rem;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+    caret-color: var(--rojo);
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+
+  .stepper__numero::-webkit-inner-spin-button,
+  .stepper__numero::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+
+  .escalera {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
     margin: 0;
     padding: 0;
     list-style: none;
-    border-top: 2px solid var(--ranura);
   }
 
-  .renglon {
+  .escalon {
     display: grid;
-    grid-template-columns: 1fr auto;
-    grid-template-areas:
-      'que precio'
-      'que cantidad';
-    align-items: center;
-    gap: 0.5rem 1rem;
-    padding-block: clamp(0.85rem, 2vh, 1.15rem);
-    border-bottom: 2px solid var(--ranura);
-    box-shadow: 0 1px 0 rgb(255 255 255 / 0.04);
-  }
-
-  .renglon__que { grid-area: que; min-width: 0; }
-
-  .renglon__nombre {
-    margin: 0;
-    font-size: clamp(1.45rem, 3.6vw, 2.35rem);
-    font-weight: 600;
-    transition: color 200ms var(--ease);
-  }
-
-  .renglon__detalle {
-    margin: 0.4rem 0 0;
-    color: var(--letra-2);
-    font-size: 0.95rem;
-    line-height: 1.35;
-  }
-
-  .renglon__precio {
-    grid-area: precio;
-    text-align: right;
-    font-size: clamp(1.35rem, 3vw, 2.1rem);
-    color: var(--amarillo);
-  }
-
-  .subtotal {
-    display: block;
-    min-height: 1em;
-    margin-top: 0.3rem;
-    font-size: 0.95rem;
-    letter-spacing: 0.08em;
-    color: var(--letra-2);
-  }
-
-  .cantidad {
-    grid-area: cantidad;
-    justify-self: end;
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-  }
-
-  .cantidad__boton {
-    display: grid;
-    place-items: center;
-    width: 3rem;
-    height: 3rem;
-    padding: 0;
-    border: 0;
-    border-radius: 3px;
-    background: none;
-    color: var(--letra);
+    width: 100%;
+    gap: 0.2rem;
+    padding: 0.6rem 0.4rem 0.55rem;
+    border: 2px solid var(--linea);
+    border-radius: 10px;
+    background: var(--carbon-2);
+    color: var(--tiza-2);
     cursor: pointer;
-    transition: color 160ms var(--ease), transform 160ms var(--ease);
+    transition: border-color 160ms var(--ease), background-color 200ms var(--ease), color 160ms var(--ease);
   }
 
-  .cantidad__boton :global(.icono) { width: 1.6rem; height: 1.6rem; filter: drop-shadow(0 2px 1.5px rgb(0 0 0 / 0.65)); }
+  .escalon__cant { font-size: 1.2rem; font-weight: 800; }
+  .escalon__precio { font-size: 1.6rem; color: var(--tiza); }
 
-  .cantidad__boton:hover:not(:disabled) { color: var(--amarillo); }
-  .cantidad__boton:active:not(:disabled) { transform: translateY(2px); }
-  .cantidad__boton:disabled { color: var(--letra-3); opacity: 0.45; cursor: default; }
+  .escalon:hover { border-color: var(--rojo); color: var(--tiza); }
 
-  .cantidad__numero {
-    min-width: 2.4ch;
-    text-align: center;
-    font-size: 1.9rem;
-    color: var(--letra-3);
-    transition: color 200ms var(--ease);
+  .escalon[aria-pressed='true'] {
+    border-color: var(--rojo);
+    background: var(--rojo);
+    color: var(--tiza);
   }
 
-  .renglon.elegido .renglon__nombre { color: var(--amarillo); }
-  .renglon.elegido .cantidad__numero { color: var(--letra); }
+  .entrega { display: grid; gap: 0.6rem; margin: 0; padding: 0; border: 0; }
+  .entrega legend { margin-bottom: 0.6rem; }
 
-  @media (min-width: 760px) {
-    .renglon {
-      grid-template-columns: minmax(0, 1fr) auto auto;
-      grid-template-areas: 'que precio cantidad';
-      gap: 2.5rem;
-    }
-    .cantidad { gap: 0.5rem; }
-  }
-
-  /* Entrega */
-  .entrega {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    align-items: center;
-    gap: 0.75rem 1.5rem;
-    margin: 0;
-    padding: 1.1rem 0;
-    border: 0;
-    border-bottom: 2px solid var(--ranura);
-  }
-
-  .entrega__titulo { font-size: 1.15rem; letter-spacing: 0.14em; color: var(--letra-2); }
-
-  .entrega__opciones { display: flex; flex-wrap: wrap; gap: 0.25rem; justify-self: end; }
-  .opcion--comercio:has(input:checked) { color: var(--rojo); }
-  .opcion--comercio:has(input:checked)::after { background: var(--rojo); }
-
-  @media (max-width: 559px) {
-    .entrega { grid-template-columns: 1fr; }
-    .entrega__opciones { justify-self: start; margin-left: -1rem; }
-  }
+  .entrega__opciones { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
 
   .opcion {
     position: relative;
     display: grid;
     place-items: center;
     min-height: 3rem;
-    padding: 0.4rem 1rem;
-    font-size: clamp(1.3rem, 3vw, 1.75rem);
-    color: var(--letra-3);
+    border: 2px solid var(--linea);
+    border-radius: 10px;
+    color: var(--tiza-2);
+    font-size: 1.4rem;
     cursor: pointer;
-    border-radius: 3px;
-    transition: color 160ms var(--ease);
+    transition: border-color 160ms var(--ease), color 160ms var(--ease);
   }
 
-  .opcion input {
-    position: absolute;
-    inset: 0;
-    margin: 0;
-    opacity: 0;
-    cursor: pointer;
-  }
+  .opcion input { position: absolute; inset: 0; margin: 0; opacity: 0; cursor: pointer; }
+  .opcion:hover { color: var(--tiza); border-color: var(--tiza-3); }
+  .opcion:has(input:checked) { border-color: var(--rojo); color: var(--tiza); box-shadow: inset 0 0 0 1px var(--rojo); }
+  .opcion:has(input:focus-visible) { outline: 3px solid var(--tiza); outline-offset: 3px; }
 
-  .opcion:hover { color: var(--letra); }
-  .opcion:has(input:checked) { color: var(--amarillo); }
-  .opcion:has(input:checked)::after { content: ''; position: absolute; left: 1rem; right: 1rem; bottom: 0.15rem; height: 3px; background: var(--amarillo); box-shadow: 0 2px 2px rgb(0 0 0 / 0.5); }
-  .opcion:has(input:focus-visible) { outline: 3px solid var(--amarillo); outline-offset: 3px; }
+  .pedido__nota { display: flex; align-items: center; gap: 0.45rem; margin: 0; color: var(--tiza-2); font-size: 0.95rem; line-height: 1.35; }
+  .pedido__nota[hidden] { display: none; }
+  .pedido__nota :global(.icono) { width: 1.05rem; height: 1.05rem; color: var(--rojo-claro); flex: none; }
 
-  .entrega__nota,
-  .entrega__direccion { grid-column: 1 / -1; }
+  .campo { display: grid; gap: 0.45rem; }
+  .campo[hidden] { display: none; }
+  .campo label { font-weight: 600; }
 
-  .entrega__nota { margin: 0; color: var(--letra-2); font-size: 0.95rem; }
-  .entrega__nota[hidden] { display: none; }
-  .entrega__nota a { color: var(--letra); }
-
-  .entrega__direccion { display: grid; gap: 0.5rem; }
-  .entrega__direccion[hidden] { display: none; }
-
-  .entrega__direccion label { font-weight: 500; }
-
-  .entrega__direccion input {
+  .campo input {
     width: 100%;
-    max-width: 32rem;
-    min-height: 3.25rem;
-    padding: 0.75rem 1rem;
-    border: 2px solid var(--alu-3);
-    border-radius: 3px;
-    background: var(--ranura);
-    color: var(--letra);
+    min-height: 3.1rem;
+    padding: 0.65rem 0.9rem;
+    border: 2px solid var(--linea);
+    border-radius: 10px;
+    background: var(--carbon);
+    color: var(--tiza);
     font: inherit;
-    caret-color: var(--amarillo);
-    box-shadow: inset 0 2px 5px rgb(0 0 0 / 0.6);
+    caret-color: var(--rojo);
+    color-scheme: dark;
   }
 
-  .entrega__direccion input::placeholder { color: var(--letra-3); }
-  .entrega__direccion input:focus-visible { outline-offset: 2px; border-color: var(--amarillo); }
+  .campo input::placeholder { color: var(--tiza-3); }
+  .campo input:focus-visible { outline-offset: 2px; border-color: var(--rojo); }
 
-  @media (min-width: 760px) {
-    .entrega { grid-template-columns: auto auto 1fr; }
-    .entrega__opciones { justify-self: start; }
-    .entrega__nota[data-nota-retiro],
-    .entrega__nota[data-nota-comercio] { grid-column: auto; justify-self: end; text-align: right; max-width: 22rem; }
+  @media (min-width: 560px) {
+    .campo--dia { grid-template-columns: auto 1fr; align-items: center; column-gap: 1rem; }
+    .campo--dia .pedido__nota { grid-column: 1 / -1; }
   }
 
-  /* Total y acción */
   .total {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: 1.25rem 2rem;
-    padding-top: clamp(1.25rem, 3vh, 1.75rem);
+    gap: 1rem 1.5rem;
+    padding-top: 1rem;
+    border-top: 2px dashed var(--linea);
   }
 
-  .total__vacio {
-    font-family: var(--letras);
-    font-weight: 500;
-    font-size: clamp(1.2rem, 2.4vw, 1.5rem);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--letra-2);
+  .total__cifra { display: grid; grid-template-columns: auto auto; align-items: baseline; column-gap: 0.75rem; }
+  .total__rotulo { font-size: 1.3rem; color: var(--tiza-2); }
+  .total__monto { font-size: clamp(2.3rem, 7vw, 3rem); font-variant-numeric: tabular-nums; padding: 0.3em 0.55em 0.25em; rotate: -3deg; }
+  .total__estimado { flex-basis: 100%; }
+  .total__ahorro { grid-column: 1 / -1; margin-top: 0.3rem; color: var(--rojo-claro); font-size: 1.3rem; rotate: -3deg; transform-origin: left; }
+  .total__ahorro[hidden] { display: none; }
+
+  @media (max-width: 559px) {
+    .total__boton { width: 100%; }
   }
 
-  .total__lleno { display: flex; align-items: baseline; gap: 1rem; }
-  .total__lleno[hidden] { display: none; }
+  /* ---------- Portada en pantallas anchas ---------- */
+  @media (min-width: 1000px) {
+    .portada {
+      grid-template-columns: minmax(0, 1.2fr) minmax(24rem, 0.8fr);
+      grid-template-rows: auto auto 1fr;
+      grid-template-areas:
+        'titular lema'
+        'titular pedido'
+        'foto pedido';
+      column-gap: clamp(2rem, 4vw, 4rem);
+      align-items: start;
+    }
 
-  .total__titulo { font-size: 1.15rem; letter-spacing: 0.14em; color: var(--letra-2); }
+    .titular__venta { font-size: clamp(2.6rem, 3.8vw, 3.8rem); }
+    .titular__pre { font-size: clamp(5rem, 8.2vw, 8.2rem); }
+    .titular__caseras { font-size: clamp(4.4rem, 6.8vw, 6.8rem); }
 
-  .total__monto { font-size: clamp(2.4rem, 6vw, 3.6rem); color: var(--amarillo); }
+    .lema { justify-self: center; margin: 0.4rem 0 0; font-size: clamp(1.4rem, 1.9vw, 1.8rem); }
 
-  .plaqueta--grande { font-size: clamp(1.35rem, 2.4vw, 1.6rem); padding-inline: 1.75rem; }
+    .portada__foto { width: 112%; margin: -1rem 0 0 -4%; align-self: center; }
 
-  @media (max-width: 560px) {
-    .total .plaqueta { width: 100%; font-size: 1.2rem; letter-spacing: 0.04em; padding-inline: 1rem; }
+    .pedido { margin-top: 3.4rem; }
   }
 
-  /* ---------- Secciones ---------- */
-  .placa {
-    padding: clamp(1.75rem, 5vw, 3.5rem);
-    border: 8px solid var(--alu-2);
-    border-radius: 3px;
-    box-shadow:
-      inset 0 0 0 1px rgb(255 255 255 / 0.3),
-      inset 0 5px 12px rgb(0 0 0 / 0.55),
-      0 14px 30px -12px rgb(0 0 0 / 0.7);
+  /* ---------- Precios ---------- */
+  .precios {
+    display: grid;
+    gap: 2.75rem 2rem;
+    padding-bottom: clamp(3rem, 8vw, 5rem);
+  }
+
+  @media (min-width: 900px) {
+    .precios { grid-template-columns: 1fr 1fr; align-items: stretch; }
+  }
+
+  .precios .banda,
+  .mayor > .banda { margin: -1.15em 0 0 -1.25rem; }
+
+
+  .menor { display: flex; flex-direction: column; }
+  .menor .menor__cuerpo { flex: 1; align-content: center; }
+
+  .menor__detalle { margin: 1rem 0 1.25rem; max-width: 30ch; font-weight: 500; font-size: 1.1rem; }
+
+  .menor__cuerpo {
+    display: grid;
+    grid-template-columns: minmax(0, 17rem) auto;
+    justify-content: start;
+    align-items: center;
+    gap: 1rem 2rem;
+  }
+
+  .menor__foto { position: relative; margin: 0 0 2.5rem; }
+  .menor__foto img { width: 100%; height: auto; }
+
+  .menor__sello {
+    position: absolute;
+    right: -1.5rem;
+    bottom: -2.75rem;
+    margin: 0;
+    font-size: 1rem;
   }
 
   @media (max-width: 559px) {
-    .placa { margin-inline: calc(var(--gutter) * -0.5); border-width: 6px; }
+    .menor__cuerpo { grid-template-columns: 1fr; }
+    .menor__foto { max-width: 72%; }
   }
 
-  .comercios__grilla { display: grid; gap: 2rem 4rem; }
+  .sello__linea { font-size: 1.35em; }
+  .sello__sub { font-family: var(--texto); font-style: normal; font-weight: 600; font-size: 0.8em; text-transform: uppercase; }
+  .sello__precio { font-size: 2.9em; line-height: 0.9; }
 
-  @media (min-width: 900px) {
-    .comercios__grilla { grid-template-columns: 1fr auto; align-items: end; }
-    .comercios__grilla .condiciones { margin-bottom: 0; }
-  }
+  .promos { display: grid; align-content: start; gap: 1rem; }
 
-  .seccion {
-    padding-block: clamp(4.5rem, 12vw, 8rem) 0;
-  }
+  .promos__lista { display: grid; gap: 0.9rem; margin: 0.5rem 0 0; padding: 0; list-style: none; }
 
-  .titulo {
-    margin: 0 0 clamp(1.5rem, 4vw, 2.5rem);
-    max-width: 18ch;
-    font-size: clamp(2.4rem, 7vw, 4.75rem);
-    font-weight: 600;
-    line-height: 0.98;
-    text-wrap: balance;
-  }
-
-  .titulo--rojo { color: var(--rojo); max-width: 16ch; }
-
-  /* La docena */
-  .docena {
+  .promo {
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    max-width: 62rem;
-    font-family: var(--letras);
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas: 'cant que precio' 'elegir elegir elegir';
+    align-items: center;
+    gap: 0.25rem 0.75rem;
+    padding: 0.85rem 1rem 0.5rem;
+    border: 2px solid var(--rojo);
+    border-radius: 10px;
+  }
+
+  .promo__cant { grid-area: cant; font-size: clamp(3.4rem, 9vw, 4.2rem); line-height: 0.8; }
+  .promo__que { grid-area: que; display: grid; font-size: clamp(1.4rem, 3.6vw, 1.75rem); }
+  .promo__sub { font-family: var(--texto); font-weight: 600; font-size: 0.9rem; color: var(--tiza-2); text-transform: uppercase; }
+  .promo__precio { grid-area: precio; font-size: clamp(2.3rem, 6.4vw, 3.2rem); padding: 0.3em 0.55em 0.25em; margin-right: -0.4rem; }
+
+  .promo__elegir {
+    grid-area: elegir;
+    justify-self: start;
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 0.6rem;
+    min-height: 2.75rem;
+    margin-left: -0.4rem;
+    padding: 0.4rem;
+    border: 0;
+    background: none;
+    color: var(--tiza);
+    font: inherit;
     font-weight: 600;
-    gap: clamp(0.4rem, 1.2vw, 0.9rem);
-    line-height: 1;
+    text-decoration: underline;
+    text-decoration-color: var(--rojo);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.25em;
+    cursor: pointer;
   }
+
+  .promo__elegir:hover { color: var(--rojo-claro); }
+  .promo__ahorro { color: var(--tiza-2); font-weight: 400; font-size: 0.95rem; text-decoration: none; display: inline-block; }
+
+  .promos__lema {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    margin: 0.75rem 0 0.25rem;
+    font-size: clamp(1.5rem, 4vw, 1.9rem);
+    text-align: center;
+    rotate: -4deg;
+  }
+
+  .promos__lema .rayas { position: static; width: 2rem; margin: 0; rotate: 0deg; flex: none; }
+  .promos__lema .rayas--izq { scale: -1 1; }
+
+  /* ---------- Por mayor ---------- */
+  .mayor { margin-bottom: clamp(3rem, 8vw, 5rem); }
+
+  .mayor__grilla { display: grid; gap: 1.5rem; margin-top: 1rem; }
 
   @media (min-width: 900px) {
-    .docena { grid-template-columns: repeat(12, 1fr); }
+    .mayor__grilla { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); align-items: start; }
   }
 
-  .docena__pieza { display: block; }
-  .docena :global(.prepizza) { width: 100%; height: auto; transform: rotate(var(--giro)); filter: drop-shadow(0 3px 3px rgb(0 0 0 / 0.55)); }
-  .docena :global(.prepizza__masa) { fill: var(--letra); }
-  .docena :global(.prepizza__salsa) { fill: var(--rojo); }
-  .docena :global(.prepizza__pinchazos) { fill: rgb(0 0 0 / 0.35); }
+  .mayor__ideal { margin: 0 0 1rem; font-size: clamp(1.4rem, 3.4vw, 1.75rem); font-weight: 600; }
+  .mayor__ideal .guion { color: var(--rojo-claro); font-size: 1.15em; margin-inline: 0.05em 0.15em; }
 
-  .rinde__cuenta {
-    margin: clamp(1rem, 3vw, 1.75rem) 0 0;
-    font-size: clamp(2rem, 5.4vw, 3.5rem);
-    color: var(--amarillo);
+  .mayor__rubros { gap: 0.7rem; }
+  .mayor__rubros li { font-size: 1.15rem; }
+  .tildes :global(.mayor__rubro) { color: var(--tiza-2); stroke-width: 1.7; width: 1.6rem; height: 1.6rem; }
+
+  .mayor__foto { position: relative; padding-bottom: 3rem; }
+
+  /* Pila de bolsas: lo que se lleva por mayor */
+  .pila { position: relative; max-width: 36rem; aspect-ratio: 36 / 16; }
+  .pila__bolsa { position: absolute; width: 54%; height: auto; filter: drop-shadow(0 10px 14px rgb(0 0 0 / 0.55)); }
+  .pila__bolsa--1 { left: 0; top: 8%; rotate: -5deg; }
+  .pila__bolsa--2 { left: 44%; top: 0; rotate: 4deg; }
+
+  .mayor__sello {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.85rem 1.3rem 0.8rem;
+    font-size: clamp(1.15rem, 3.2vw, 1.45rem);
+    text-decoration: none;
+    text-align: left;
+    transition: rotate 220ms var(--ease), scale 220ms var(--ease);
   }
 
-  .rinde__texto {
-    max-width: 40rem;
-    margin: 1.25rem 0 0;
-    color: var(--letra-2);
-  }
+  .mayor__sello:hover { color: var(--tiza); rotate: -2deg; scale: 1.04; }
+  .mayor__sello > span { display: grid; }
+  .mayor__sello .sello__linea { font-size: 1em; max-width: 13ch; }
+  .mayor__sello .sello__sub { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.72em; letter-spacing: 0.06em; }
+  .mayor__sello :global(.mayor__caja) { width: 2.6rem; height: 2.6rem; stroke-width: 1.6; flex: none; }
+  .mayor__sello :global(.mayor__wa) { width: 1rem; height: 1rem; }
 
-  /* Lista de entrega */
-  .lista { margin: 0; border-top: 2px solid var(--ranura); }
-
-  .lista__fila {
+  /* ---------- Cierre ---------- */
+  .cierre {
     display: grid;
-    gap: 0.5rem 2rem;
-    padding-block: 1.5rem;
-    border-bottom: 2px solid var(--ranura);
+    justify-items: center;
+    gap: 1.5rem;
+    padding-block: clamp(2rem, 6vw, 4rem) clamp(4rem, 10vw, 6rem);
+    text-align: center;
   }
 
-  @media (min-width: 760px) {
-    .lista__fila { grid-template-columns: 16rem 1fr; align-items: baseline; }
+  .cierre__llamada {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    text-decoration: none;
   }
 
-  .lista dt { margin: 0; }
-  .lista dd { margin: 0; max-width: 42rem; }
-  .lista dd p { margin: 0; color: var(--letra-2); }
-  .lista dd a { color: var(--letra); }
-
-  .lista__clave { font-size: clamp(1.6rem, 3.6vw, 2.25rem); color: var(--amarillo); }
-
-  .lista dd .lista__dato {
-    margin-bottom: 0.3rem;
-    color: var(--letra);
-    font-size: 1.2rem;
-    font-weight: 500;
+  .cierre__wa {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: clamp(3.5rem, 11vw, 5.5rem);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--rojo);
+    color: var(--tiza);
+    rotate: -8deg;
+    transition: rotate 300ms var(--ease);
   }
 
-  /* Comercios */
-  .condiciones {
-    margin: 0 0 2.25rem;
-    padding: 0;
-    list-style: none;
-    border-top: 2px solid var(--ranura);
+  .cierre__wa :global(.icono) { width: 58%; height: 58%; }
+
+  .cierre__linea { display: flex; flex-wrap: wrap; align-items: center; gap: 0.1rem 0.75rem; text-align: left; }
+  .cierre__texto { font-size: clamp(1.3rem, 3.6vw, 2.2rem); }
+
+  .cierre__flecha {
+    display: inline-block;
+    width: 3.5rem;
+    height: 0.6em;
+    background: url('/marca/trazo.svg') center / 100% 100% no-repeat;
   }
 
-  .condiciones li {
-    padding-block: 1rem;
-    border-bottom: 2px solid var(--ranura);
-    font-size: clamp(1.35rem, 3.2vw, 2rem);
+  .cierre__numero {
+    font-size: clamp(2.6rem, 9vw, 5.5rem);
+    font-variant-numeric: tabular-nums;
+    line-height: 0.9;
+    transition: color 200ms var(--ease);
   }
 
-  /* Familia */
-  .familia { padding-bottom: clamp(4.5rem, 12vw, 8rem); }
+  .cierre__llamada:hover .cierre__numero { color: var(--rojo-claro); }
+  .cierre__llamada:hover .cierre__wa { rotate: 4deg; }
 
-  .familia__grilla { display: grid; gap: 0 4rem; }
-
-  @media (min-width: 900px) {
-    .familia__grilla { grid-template-columns: 1fr 1fr; align-items: start; }
+  @media (max-width: 559px) {
+    .cierre__llamada { flex-direction: column; gap: 0.75rem; }
+    .cierre__linea { justify-content: center; text-align: center; }
+    .cierre__texto, .cierre__numero { font-size: clamp(2rem, 10vw, 2.6rem); }
+    .cierre__flecha { display: none; }
   }
 
-  .familia__texto { max-width: 36rem; font-size: 1.15rem; }
-  .familia__texto p { margin: 0 0 1rem; }
+  .cierre__aviso { font-size: clamp(0.95rem, 3.4vw, 1.6rem); text-align: left; }
+
+  .cierre__espera { margin: 0; font-size: clamp(1.6rem, 4vw, 2.2rem); rotate: -6deg; }
 
   /* ---------- Pie ---------- */
   .pie {
-    padding-block: 2.5rem calc(var(--marco) + 6.5rem);
-    background: rgb(0 0 0 / 0.22);
-    border-top: 2px solid var(--ranura);
-    color: var(--letra-2);
+    padding-block: 2.25rem 7rem;
+    border-top: 2px solid var(--rojo);
+    background: rgb(0 0 0 / 0.35);
+    color: var(--tiza-2);
     font-size: 0.95rem;
   }
 
-  .pie__grilla {
-    display: grid;
-    gap: 1.25rem 3rem;
-  }
+  .pie__grilla { display: grid; gap: 1rem 3rem; }
 
   @media (min-width: 760px) {
-    .pie__grilla { grid-template-columns: auto 1fr auto; align-items: start; }
+    .pie { padding-bottom: 2.25rem; }
+    .pie__grilla { grid-template-columns: auto 1fr; align-items: start; }
     .pie__legal { grid-column: 1 / -1; }
   }
 
   .pie p { margin: 0; }
-  .pie__marca { color: var(--letra); font-size: 1.35rem; letter-spacing: 0.12em; }
-
-  .pie__links { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; margin: 0; padding: 0; list-style: none; }
-  .pie__links a { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.75rem; color: var(--letra); text-decoration: none; }
-  .pie__links a:hover { color: var(--amarillo); }
-  .pie__links :global(.icono) { width: 1.1rem; height: 1.1rem; }
-  .pie__ejemplo { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.75rem; }
-
-  .pie__legal { font-size: 0.85rem; color: var(--letra-3); }
+  .pie__marca { color: var(--tiza); font-size: 1.5rem; }
+  .pie__datos { display: grid; gap: 0.4rem; margin: 0; padding: 0; list-style: none; }
+  .pie__datos li { display: flex; align-items: center; gap: 0.55rem; }
+  .pie__datos :global(.icono) { width: 1.1rem; height: 1.1rem; color: var(--rojo-claro); flex: none; }
+  .pie__legal { font-size: 0.85rem; color: var(--tiza-3); }
 
   /* ---------- Barra fija ---------- */
   .barra {
     position: fixed;
-    left: var(--marco);
-    right: var(--marco);
-    bottom: var(--marco);
-    z-index: 39;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 30;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    padding: 0.6rem 0.6rem 0.6rem calc(var(--gutter) * 0.6 + 0.5rem);
-    background: linear-gradient(180deg, var(--alu-1), var(--alu-2));
-    color: var(--fieltro);
-    box-shadow: 0 -8px 20px -6px rgb(0 0 0 / 0.55);
-    transform: translateY(0);
+    padding: 0.6rem var(--gutter) calc(0.6rem + env(safe-area-inset-bottom));
+    border-top: 2px solid var(--rojo);
+    background: rgb(7 7 7 / 0.96);
+    box-shadow: 0 -10px 24px -8px rgb(0 0 0 / 0.7);
     transition: transform 320ms var(--ease);
   }
 
-  .barra[hidden] { display: flex; transform: translateY(calc(100% + var(--marco))); visibility: hidden; transition: transform 320ms var(--ease), visibility 0s 320ms; }
+  .barra[hidden] { display: flex; transform: translateY(110%); visibility: hidden; transition: transform 320ms var(--ease), visibility 0s 320ms; }
 
-  .barra__resumen { font-size: clamp(1.05rem, 4.4vw, 1.3rem); letter-spacing: 0.04em; white-space: nowrap; }
-  .barra__resumen :global(.letra) { text-shadow: none; }
-
-  .barra__cta {
-    min-height: 3rem;
-    padding: 0.75rem 1.25rem 0.65rem;
-    background: var(--fieltro);
-    color: var(--letra);
-    font-size: 1.2rem;
-  }
-
-  .barra__cta:hover { background: var(--ranura); color: var(--amarillo); }
+  .barra__resumen { font-size: clamp(1.2rem, 4.6vw, 1.5rem); white-space: nowrap; }
+  .barra__cta { min-height: 3rem; font-size: 1.3rem; padding-inline: 1.3rem; }
 </style>

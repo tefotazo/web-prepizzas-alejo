@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import { negocio } from '../data/negocio';
+import pincel from '@fontsource/protest-revolution/files/protest-revolution-latin-400-normal.woff2?url';
 
 interface Props {
   titulo: string;
@@ -15,7 +16,8 @@ const { titulo, descripcion } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{titulo}</title>
     <meta name="description" content={descripcion} />
-    <meta name="theme-color" content="#17231e" />
+    <meta name="theme-color" content="#0d0f10" />
+    <link rel="preload" href={pincel} as="font" type="font/woff2" crossorigin />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta property="og:title" content={titulo} />
     <meta property="og:description" content={descripcion} />
@@ -23,7 +25,7 @@ const { titulo, descripcion } = Astro.props;
   </head>
   <body>
     {negocio.ejemplo && (
-      <p class="aviso">Sitio de ejemplo: precios, horarios, contacto, condiciones e historia todavía no son los reales.</p>
+      <p class="aviso">El nombre de la marca, la dirección de retiro, los horarios y las zonas de envío todavía son de ejemplo.</p>
     )}
     <slot />
   </body>

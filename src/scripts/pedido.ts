@@ -1,168 +1,144 @@
-// Arma el pedido en el tablero y lo convierte en un mensaje de WhatsApp.
+// Arma el pedido de paquetes y lo convierte en un mensaje de WhatsApp.
+import { formatoPrecio, precioPedido, precioSuelto, negocio, type Promo } from '../data/negocio';
 
-const formato = new Intl.NumberFormat('es-AR');
-const precio = (n: number) => '$ ' + formato.format(n);
+const MAX = 99;
 
-const ruido = (i: number, c: string) => {
-  const x = Math.sin((i + 1) * 12.9898 + c.charCodeAt(0) * 78.233) * 43758.5453;
-  return x - Math.floor(x) - 0.5;
-};
+// Vuelve a "pegar" el elemento, como un sello nuevo encima del anterior.
+function estampar(el: HTMLElement) {
+  el.classList.remove('estampa');
+  void el.offsetWidth;
+  el.classList.add('estampa');
+}
 
-// Reemplaza el texto letra por letra; solo se encastran las letras que cambiaron.
-function ponerLetras(el: HTMLElement, texto: string) {
-  const anterior = el.dataset.valor ?? el.textContent ?? '';
-  if (anterior === texto) return;
-  el.dataset.valor = texto;
-
-  const fragmento = document.createDocumentFragment();
-  let cambiadas = 0;
-  [...texto].forEach((c, i) => {
-    if (c === ' ') {
-      fragmento.append(' ');
-      return;
-    }
-    const letra = document.createElement('span');
-    letra.className = 'letra';
-    letra.textContent = c;
-    letra.style.setProperty('--dy', `${(ruido(i, c) * 0.05).toFixed(3)}em`);
-    letra.style.setProperty('--rot', `${(ruido(i + 7, c) * 2.4).toFixed(2)}deg`);
-    // Se compara alineando desde la derecha, como se leen los números.
-    const previa = anterior[anterior.length - (texto.length - i)];
-    if (c !== previa) {
-      letra.classList.add('encastra');
-      letra.style.animationDelay = `${cambiadas++ * 40}ms`;
-    }
-    fragmento.append(letra);
-  });
-  el.replaceChildren(fragmento);
+function fechaLegible(valor: string) {
+  if (!valor) return '';
+  return new Date(`${valor}T12:00`).toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'numeric' });
 }
 
 export function iniciarPedido() {
   const form = document.querySelector<HTMLFormElement>('#pedido');
   if (!form) return;
 
-  const renglones = [...form.querySelectorAll<HTMLElement>('[data-producto]')];
-  const cantidades = new Map(renglones.map((r) => [r.dataset.producto!, 0]));
-  const ctas = [...document.querySelectorAll<HTMLAnchorElement>('[data-cta-pedido]')];
-  const ctaTexto = form.querySelector<HTMLElement>('[data-cta-texto]')!;
-  const vacio = form.querySelector<HTMLElement>('[data-vacio]')!;
-  const lleno = form.querySelector<HTMLElement>('[data-lleno]')!;
+  const promos: Promo[] = JSON.parse(form.dataset.precios ?? '[]');
+  const campo = form.querySelector<HTMLInputElement>('#paquetes')!;
+  const menos = form.querySelector<HTMLButtonElement>('[data-accion="menos"]')!;
+  const escalones = [...form.querySelectorAll<HTMLButtonElement>('[data-paquetes]')];
+  const unidades = form.querySelector<HTMLElement>('[data-unidades]')!;
   const total = form.querySelector<HTMLElement>('[data-total]')!;
+  const ahorro = form.querySelector<HTMLElement>('[data-ahorro]')!;
+  const estimado = form.querySelector<HTMLElement>('[data-estimado]')!;
   const anuncio = form.querySelector<HTMLElement>('[data-anuncio]')!;
   const direccionBox = form.querySelector<HTMLElement>('[data-direccion]')!;
   const direccion = form.querySelector<HTMLInputElement>('#direccion')!;
+  const dia = form.querySelector<HTMLInputElement>('#dia')!;
   const notaRetiro = form.querySelector<HTMLElement>('[data-nota-retiro]')!;
-  const notaComercio = form.querySelector<HTMLElement>('[data-nota-comercio]')!;
+  const ctas = [...document.querySelectorAll<HTMLAnchorElement>('[data-cta-pedido]')];
   const barra = document.querySelector<HTMLElement>('[data-barra]')!;
   const barraResumen = document.querySelector<HTMLElement>('[data-barra-resumen]')!;
-  const barraCta = document.querySelector<HTMLElement>('[data-barra-cta]')!;
   const totalFila = form.querySelector<HTMLElement>('.total')!;
   const numero = form.dataset.wa!;
 
+  const hoy = new Date();
+  dia.min = new Date(hoy.getTime() - hoy.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+
+  let cantidad = 1;
   let totalEnVista = true;
+  let totalAnterior = '';
 
   const entrega = () => form.querySelector<HTMLInputElement>('input[name="entrega"]:checked')?.value ?? 'retiro';
 
-  function mensaje(items: { nombre: string; cantidad: number; subtotal: number }[], suma: number) {
-    if (!items.length) return form!.dataset.mensajeVacio ?? 'Hola!';
-    const lineas = items.map((i) => `• ${i.cantidad} × ${i.nombre}: ${precio(i.subtotal)}`);
+  // Las promos publicadas llegan hasta cierta cantidad; de ahí en más el total combinado es una estimación.
+  const esEstimado = () => cantidad > promos[promos.length - 1].paquetes;
+
+  function mensaje(suma: number) {
+    const prepizzas = cantidad * negocio.paquete.prepizzas;
     const dir = direccion.value.trim();
-    const tipo = entrega();
-    if (tipo === 'comercio') {
-      return ['Hola! Tengo un comercio y quiero hacer un pedido por mayor:', '', ...lineas.map((l) => l.split(':')[0]), '', '¿Me pasan los precios mayoristas y el día de entrega?', 'Gracias!'].join('\n');
-    }
+    const cuando = fechaLegible(dia.value);
     const comoLlega =
-      tipo === 'envio'
+      entrega() === 'envio'
         ? `Entrega: envío a domicilio${dir ? `, a ${dir}` : ' (te paso la dirección)'}`
         : `Entrega: paso a retirar por ${form!.dataset.retiro}`;
-    return ['Hola! Quiero hacer este pedido:', '', ...lineas, '', `Total: ${precio(suma)}`, comoLlega, '', 'Gracias!'].join('\n');
+    return [
+      'Hola! Quiero hacer este pedido:',
+      '',
+      `• ${cantidad} ${cantidad === 1 ? 'paquete' : 'paquetes'} (${prepizzas} pre-pizzas)`,
+      esEstimado() ? `Total estimado: ${formatoPrecio(suma)} (a confirmar)` : `Total: ${formatoPrecio(suma)}`,
+      comoLlega,
+      cuando ? `Para el ${cuando}` : 'Día: a coordinar',
+      '',
+      'Gracias!',
+    ].join('\n');
   }
 
-  function actualizar(cambio?: string) {
-    const items: { nombre: string; cantidad: number; subtotal: number }[] = [];
-    let suma = 0;
-    let unidades = 0;
+  function actualizar(anunciar = false) {
+    const suma = precioPedido(cantidad, promos);
+    const ahorra = precioSuelto(cantidad) - suma;
+    const tope = Math.min(cantidad, promos[promos.length - 1].paquetes);
 
-    for (const r of renglones) {
-      const id = r.dataset.producto!;
-      const cant = cantidades.get(id) ?? 0;
-      const valor = Number(r.dataset.precio);
-      const sub = cant * valor;
-      r.classList.toggle('elegido', cant > 0);
-      ponerLetras(r.querySelector<HTMLElement>('[data-cantidad]')!, String(cant));
-      ponerLetras(r.querySelector<HTMLElement>('[data-subtotal]')!, cant > 1 ? `= ${precio(sub)}` : '');
-      r.querySelector<HTMLButtonElement>('[data-accion="menos"]')!.disabled = cant === 0;
-      if (cant > 0) items.push({ nombre: r.dataset.nombre!, cantidad: cant, subtotal: sub });
-      suma += sub;
-      unidades += cant;
+    campo.value = String(cantidad);
+    menos.disabled = cantidad <= 1;
+    unidades.textContent = `= ${cantidad * negocio.paquete.prepizzas} pre-pizzas`;
+    escalones.forEach((b) => b.setAttribute('aria-pressed', String(Number(b.dataset.paquetes) === tope)));
+
+    const texto = formatoPrecio(suma);
+    if (texto !== totalAnterior) {
+      total.textContent = texto;
+      if (totalAnterior) estampar(total);
+      totalAnterior = texto;
     }
+    ahorro.hidden = ahorra <= 0;
+    estimado.hidden = !esEstimado();
+    ahorro.textContent = `¡Ahorrás ${formatoPrecio(ahorra)}!`;
 
-    vacio.hidden = unidades > 0;
-    lleno.hidden = unidades === 0;
-    if (unidades > 0) ponerLetras(total, precio(suma));
-    ctaTexto.textContent = unidades > 0 ? 'Pedir por WhatsApp' : 'Consultar por WhatsApp';
-
-    const href = `${numero}?text=${encodeURIComponent(mensaje(items, suma))}`;
+    const href = `${numero}?text=${encodeURIComponent(mensaje(suma))}`;
     ctas.forEach((a) => (a.href = href));
 
-    ponerLetras(barraResumen, unidades > 0 ? `${unidades} ${unidades === 1 ? 'paquete' : 'paquetes'} · ${precio(suma)}` : '¿Qué llevás hoy?');
-    barraCta.textContent = unidades > 0 ? 'Pedir' : 'Consultar';
+    barraResumen.textContent = `${cantidad} ${cantidad === 1 ? 'paquete' : 'paquetes'} · ${texto}`;
     barra.hidden = totalEnVista;
 
-    if (cambio) {
-      const r = renglones.find((x) => x.dataset.producto === cambio)!;
-      anuncio.textContent = `${r.dataset.nombre}: ${cantidades.get(cambio)}. Total ${precio(suma)}.`;
-    }
+    if (anunciar) anuncio.textContent = `${cantidad} ${cantidad === 1 ? 'paquete' : 'paquetes'}. Total ${texto}.`;
   }
 
+  const poner = (n: number) => {
+    cantidad = Math.max(1, Math.min(MAX, Math.round(n) || 1));
+    actualizar(true);
+  };
+
   form.addEventListener('click', (e) => {
-    const boton = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-accion]');
-    if (!boton) return;
-    const id = boton.closest<HTMLElement>('[data-producto]')!.dataset.producto!;
-    const actual = cantidades.get(id) ?? 0;
-    cantidades.set(id, Math.max(0, Math.min(99, actual + (boton.dataset.accion === 'mas' ? 1 : -1))));
-    actualizar(id);
+    const objetivo = e.target as HTMLElement;
+    const paso = objetivo.closest<HTMLButtonElement>('[data-accion]');
+    if (paso) poner(cantidad + (paso.dataset.accion === 'mas' ? 1 : -1));
+    const escalon = objetivo.closest<HTMLButtonElement>('[data-paquetes]');
+    if (escalon) poner(Number(escalon.dataset.paquetes));
   });
 
-  form.addEventListener('change', () => {
+  // Los botones de las promos, fuera del formulario, cargan esa cantidad y llevan al pedido.
+  document.querySelectorAll<HTMLButtonElement>('[data-elegir]').forEach((b) =>
+    b.addEventListener('click', () => {
+      poner(Number(b.dataset.elegir));
+      form.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+    }),
+  );
+
+  campo.addEventListener('change', () => poner(Number(campo.value)));
+
+  form.addEventListener('change', (e) => {
+    if ((e.target as HTMLInputElement).name !== 'entrega') return;
     const tipo = entrega();
     direccionBox.hidden = tipo !== 'envio';
     notaRetiro.hidden = tipo !== 'retiro';
-    notaComercio.hidden = tipo !== 'comercio';
     actualizar();
   });
 
   direccion.addEventListener('input', () => actualizar());
+  dia.addEventListener('change', () => actualizar());
   form.addEventListener('submit', (e) => e.preventDefault());
 
   new IntersectionObserver(([entrada]) => {
-    totalEnVista = entrada.isIntersecting;
+    // La barra solo aparece cuando el total quedó arriba, no antes de llegar a él.
+    totalEnVista = entrada.isIntersecting || entrada.boundingClientRect.top > 0;
     actualizar();
   }).observe(totalFila);
 
   actualizar();
-}
-
-// La docena se encastra de a una letra cuando entra en pantalla.
-export function iniciarDocena() {
-  const docena = document.querySelector<HTMLElement>('[data-docena]');
-  if (!docena || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  if (docena.getBoundingClientRect().top < window.innerHeight) return;
-
-  const letras = [...docena.querySelectorAll<HTMLElement>('.letra')];
-  letras.forEach((l) => l.classList.add('pendiente'));
-
-  const obs = new IntersectionObserver(
-    ([entrada]) => {
-      if (!entrada.isIntersecting) return;
-      obs.disconnect();
-      letras.forEach((l, i) => {
-        l.style.animationDelay = `${i * 70}ms`;
-        l.classList.remove('pendiente');
-        l.classList.add('encastra');
-      });
-    },
-    { threshold: 0.6 },
-  );
-  obs.observe(docena);
 }

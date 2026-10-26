@@ -4,14 +4,17 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "astro dev",
+    "dev": "astro dev --host",
     "build": "astro build",
     "preview": "astro preview"
   },
   "dependencies": {
     "@fontsource/barlow": "^5.3.0",
     "@fontsource/barlow-condensed": "^5.3.0",
+    "@fontsource/kaushan-script": "^5.3.0",
+    "@fontsource/protest-revolution": "^5.3.0",
     "astro": "^5.18.2",
+    "lucide-static": "^1.61.0",
     "simple-icons": "^16.35.0"
   }
 }

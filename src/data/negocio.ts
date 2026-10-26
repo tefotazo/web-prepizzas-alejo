@@ -1,55 +1,63 @@
 // Todos los datos del negocio viven acá. Los marcados REEMPLAZAR son de ejemplo:
 // cambialos por los reales y poné `ejemplo: false` para sacar el aviso del sitio.
 
-export interface Producto {
-  id: string;
-  nombre: string;
-  detalle: string;
+export interface Promo {
+  paquetes: number;
   precio: number;
-  unidades: number;
 }
 
 export const negocio = {
   ejemplo: true,
 
-  nombre: 'Prepizzas de la Casa', // REEMPLAZAR
-  familia: 'la familia Ejemplo', // REEMPLAZAR
+  nombre: 'Pre-Pizzas Caseras', // REEMPLAZAR si la marca tiene nombre propio
   barrio: 'Barrio Ejemplo', // REEMPLAZAR
   // Número con código de país y sin signos: 54 9 + característica + número
-  whatsapp: '5491100000000', // REEMPLAZAR
-  instagram: 'prepizzasdelacasa', // REEMPLAZAR (o dejar vacío)
+  whatsapp: '5491164313066',
+  telefono: '11 6431-3066',
 
   horario: 'Lun a sáb · 10 a 20 h', // REEMPLAZAR
-  dias: 'Lunes a sábado', // REEMPLAZAR
   direccionRetiro: 'Calle Ejemplo 1234', // REEMPLAZAR
   zonasEnvio: ['Barrio Ejemplo', 'Villa Ejemplo', 'Parque Ejemplo'], // REEMPLAZAR
-  envio: 'Gratis desde 2 docenas. Si no, $ 1.500.', // REEMPLAZAR
+  envio: 'Consultá el costo de envío a tu zona.', // REEMPLAZAR
 
-  productos: [
-    { id: 'comun', nombre: 'Docena común', detalle: '12 prepizzas de 30 cm', precio: 6000, unidades: 12 },
-    { id: 'integral', nombre: 'Docena integral', detalle: '12 prepizzas de harina integral', precio: 7200, unidades: 12 },
-    { id: 'salsa', nombre: 'Con salsa x6', detalle: 'Media docena con salsa de tomate casera', precio: 4500, unidades: 6 },
-    { id: 'chicas', nombre: 'Docena chicas', detalle: '12 prepizzetas de 18 cm, para picada', precio: 4200, unidades: 12 },
-  ] satisfies Producto[], // REEMPLAZAR precios y productos
+  paquete: {
+    prepizzas: 2,
+    detalle: 'Cada paquete incluye 2 pre-pizzas (en bolsa de polipropileno).',
+  },
+  caracteristicas: ['Salsa sola', 'Masa casera', 'Sin conservantes', 'Excelente calidad'],
 
-  // Para el bloque "rinde": qué producto se usa como ejemplo
-  productoRinde: 'comun',
-  consejo: 'Se guardan en el freezer y van directo al horno, sin descongelar.', // REEMPLAZAR
+  // Precio por cantidad de paquetes. El pedido combina estas promos para dar el menor precio.
+  promos: [
+    { paquetes: 1, precio: 3000 },
+    { paquetes: 2, precio: 5000 },
+    { paquetes: 3, precio: 7000 },
+  ] satisfies Promo[],
 
   mayorista: {
-    minimo: 'Desde 5 docenas por pedido', // REEMPLAZAR
-    entrega: 'Te las llevamos al local una vez por semana', // REEMPLAZAR
-    precio: 'Precio por docena más bajo que el minorista', // REEMPLAZAR
+    rubros: [
+      { icono: 'torta', texto: 'Cumpleaños / Fiestas' },
+      { icono: 'gente', texto: 'Reuniones / Eventos' },
+      { icono: 'local', texto: 'Kioscos / Minimercados' },
+      { icono: 'campana', texto: 'Restaurantes / Bares' },
+      { icono: 'sumar', texto: '¡Y mucho más!' },
+    ],
   },
+} as const;
 
-  historia: [
-    // REEMPLAZAR por la historia real: quién amasa, desde cuándo, qué tiene de distinto la receta.
-    'Las amasamos nosotros, en casa, en tandas chicas para que salgan siempre iguales.',
-    'Empezamos vendiéndoselas a los vecinos de la cuadra y hoy también las encontrás en almacenes del barrio.',
-  ],
-};
+export type Rubro = (typeof negocio.mayorista.rubros)[number]['icono'];
 
-export const formatoPrecio = (n: number) => '$ ' + new Intl.NumberFormat('es-AR').format(n);
+export const formatoPrecio = (n: number) => '$' + new Intl.NumberFormat('es-AR').format(n);
+
+// Menor precio para n paquetes combinando las promos.
+export function precioPedido(n: number, promos: readonly Promo[] = negocio.promos) {
+  const mejor = [0];
+  for (let i = 1; i <= n; i++) {
+    mejor[i] = Math.min(...promos.filter((p) => p.paquetes <= i).map((p) => mejor[i - p.paquetes] + p.precio));
+  }
+  return mejor[n];
+}
+
+export const precioSuelto = (n: number) => n * negocio.promos[0].precio;
 
 export const linkWhatsApp = (mensaje: string) =>
   `https://wa.me/${negocio.whatsapp}?text=${encodeURIComponent(mensaje)}`;

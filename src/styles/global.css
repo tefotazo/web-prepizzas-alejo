@@ -1,88 +1,68 @@
-@import '@fontsource/barlow-condensed/500.css';
-@import '@fontsource/barlow-condensed/600.css';
+@import '@fontsource/protest-revolution/400.css';
+@import '@fontsource/kaushan-script/400.css';
+@import '@fontsource/barlow-condensed/700-italic.css';
+@import '@fontsource/barlow-condensed/800-italic.css';
 @import '@fontsource/barlow/400.css';
 @import '@fontsource/barlow/500.css';
+@import '@fontsource/barlow/600.css';
 
 :root {
   color-scheme: dark;
 
-  --fieltro: #17231e;
-  --fieltro-hondo: #121c18;
-  --ranura: #0b130f;
-  --letra: #f3efe4;
-  --letra-2: #b9bfb3;
-  --letra-3: #8e978c;
-  --amarillo: #f2c230;
-  --rojo: #e5482f;
-  --alu-1: #e1e4e0;
-  --alu-2: #a4aaa5;
-  --alu-3: #6d746f;
+  --carbon: #070707;
+  --carbon-2: #121211;
+  --linea: #2c2b2a;
+  --tiza: #f7f4ef;
+  --tiza-2: #c9c4bd;
+  --tiza-3: #918b85;
+  --rojo: #f10516;
+  --rojo-claro: #ff4a3d;
+  --rojo-hondo: #a8000c;
 
-  --marco: 10px;
-  --paso: 10px;
-  --gutter: clamp(1.25rem, 5vw, 4rem);
-  --ancho: 76rem;
+  --gutter: clamp(1rem, 4.5vw, 3.5rem);
+  --ancho: 78rem;
+  --radio: 14px;
 
-  --letras: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  --pincel: 'Protest Revolution', 'Arial Narrow', sans-serif;
+  --guion: 'Kaushan Script', cursive;
+  --cartel: 'Barlow Condensed', 'Arial Narrow', sans-serif;
   --texto: 'Barlow', system-ui, sans-serif;
 
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@media (min-width: 900px) {
-  :root { --marco: 14px; --paso: 12px; }
 }
 
 *, *::before, *::after { box-sizing: border-box; }
 
 html {
   scroll-behavior: smooth;
-  scrollbar-color: var(--alu-3) var(--ranura);
+  scrollbar-color: var(--rojo-hondo) var(--carbon);
   -webkit-text-size-adjust: 100%;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
-  color: var(--letra);
+  color: var(--tiza);
   font-family: var(--texto);
   font-size: 1.0625rem;
-  line-height: 1.55;
-  background-color: var(--fieltro);
+  line-height: 1.5;
+  background-color: var(--carbon);
   background-image:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E"),
-    repeating-linear-gradient(
-      to bottom,
-      transparent 0 calc(var(--paso) - 3px),
-      var(--ranura) calc(var(--paso) - 3px) calc(var(--paso) - 1px),
-      rgb(255 255 255 / 0.03) calc(var(--paso) - 1px) var(--paso)
-    );
-  background-attachment: fixed, scroll;
+    url('/marca/grano.svg'),
+    radial-gradient(110% 70% at 35% 0%, #11100f 0%, transparent 65%);
+  overflow-x: hidden;
 }
 
-/* El marco de aluminio es la pantalla misma: el sitio entero es un tablero. */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: 40;
-  pointer-events: none;
-  border: var(--marco) solid var(--alu-2);
-  outline: 1px solid rgb(255 255 255 / 0.35);
-  outline-offset: -1px;
-  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.5), inset 0 6px 14px rgb(0 0 0 / 0.55);
-}
-
-::selection { background: var(--amarillo); color: var(--fieltro); }
+::selection { background: var(--rojo); color: var(--tiza); }
 
 :focus-visible {
-  outline: 3px solid var(--amarillo);
-  outline-offset: 4px;
-  border-radius: 2px;
+  outline: 3px solid var(--tiza);
+  outline-offset: 3px;
+  border-radius: 4px;
 }
 
-a { color: inherit; text-underline-offset: 0.22em; text-decoration-thickness: 1px; }
-a:hover { color: var(--amarillo); }
+a { color: inherit; text-underline-offset: 0.2em; text-decoration-thickness: 1.5px; text-decoration-color: var(--rojo); }
+a:hover { color: var(--rojo-claro); }
 
 img, svg { display: block; }
 
@@ -102,98 +82,143 @@ img, svg { display: block; }
   width: 100%;
   max-width: calc(var(--ancho) + 2 * var(--gutter));
   margin-inline: auto;
-  padding-inline: calc(var(--gutter) + var(--marco));
+  padding-inline: var(--gutter);
 }
 
-/* ---------- Letras plásticas ---------- */
+/* ---------- Voces de la marca ---------- */
 
-.letras {
-  font-family: var(--letras);
-  font-weight: 600;
+/* Letra de pincel seco, engrosada con un trazo del mismo color como el titular del flyer. */
+.pincel {
+  font-family: var(--pincel);
+  font-weight: 400;
+  line-height: 0.9;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  word-spacing: 0.12em;
-  line-height: 1;
-  font-variant-numeric: tabular-nums;
+  -webkit-text-stroke: 0.05em currentColor;
+  paint-order: stroke fill;
+  text-shadow: 0 0.04em 0.12em rgb(0 0 0 / 0.55);
 }
 
-.letras__fila { display: inline; }
-.letras__palabra { display: inline-block; white-space: nowrap; }
-
-.letra {
-  display: inline-block;
-  transform: translateY(var(--dy, 0)) rotate(var(--rot, 0deg));
-  text-shadow: 0 0.04em 0.06em rgb(0 0 0 / 0.6);
+.guion {
+  font-family: var(--guion);
+  font-weight: 400;
+  line-height: 1.05;
 }
 
-.letra.encastra {
-  animation: encastre 420ms var(--ease) backwards;
+.cartel {
+  font-family: var(--cartel);
+  font-weight: 800;
+  font-style: italic;
+  text-transform: uppercase;
+  line-height: 0.95;
+  letter-spacing: 0.005em;
 }
 
-.letra.pendiente { opacity: 0; }
-
-@keyframes encastre {
-  from {
-    opacity: 0;
-    filter: blur(3px);
-    transform: translateY(calc(var(--dy, 0em) - 0.45em)) rotate(calc(var(--rot, 0deg) - 9deg));
-  }
-  to {
-    opacity: 1;
-    filter: blur(0);
-    transform: translateY(var(--dy, 0)) rotate(var(--rot, 0deg));
-  }
+/* Banda de pincel rojo detrás de un título */
+.banda {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  margin: 0;
+  padding: 0.42em 1.1em 0.42em 0.9em;
+  background: url('/marca/banda.svg') center / 100% 100% no-repeat;
+  color: var(--tiza);
+  font-size: clamp(1.55rem, 3.4vw, 2.4rem);
 }
 
-/* Cartelito de plástico: el único elemento claro del tablero. Se usa para la acción. */
-.plaqueta {
+.banda--b { background-image: url('/marca/banda-2.svg'); }
+
+.banda .icono { width: 1.15em; height: 1.15em; flex: none; stroke-width: 1.9; }
+
+/* Sello de precio: papel rojo de borde rasgado */
+.sello {
+  display: inline-grid;
+  justify-items: center;
+  padding: 0.55em 0.9em 0.5em;
+  background: url('/marca/sello.svg') center / 100% 100% no-repeat;
+  color: var(--tiza);
+  rotate: -5deg;
+  filter: drop-shadow(0 6px 10px rgb(0 0 0 / 0.5));
+}
+
+/* Rayas de velocidad a los costados del sello, como en el flyer */
+.sello--rayas::before,
+.sello--rayas::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 1.9em;
+  height: 1.2em;
+  background: url('/marca/rayas.svg') center / contain no-repeat;
+  translate: 0 -50%;
+}
+.sello--rayas::before { right: calc(100% + 0.2em); scale: -1 1; }
+.sello--rayas::after { left: calc(100% + 0.2em); }
+
+/* Panel con filete rojo, como los recuadros del flyer */
+.panel {
+  position: relative;
+  border: 2px solid var(--rojo);
+  border-radius: var(--radio);
+  background: rgb(0 0 0 / 0.42);
+  padding: clamp(1rem, 3vw, 1.75rem);
+}
+
+/* Botón principal: cartel rojo de borde rasgado con WhatsApp */
+.boton {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.6em;
-  min-height: 3.5rem;
-  padding: 0.95rem 1.5rem 0.85rem;
+  gap: 0.55em;
+  min-height: 3.6rem;
+  padding: 0.7rem 1.6rem 0.65rem;
   border: 0;
-  border-radius: 3px;
-  background: var(--letra);
-  color: var(--fieltro);
-  font-family: var(--letras);
-  font-weight: 600;
-  font-size: 1.4rem;
-  letter-spacing: 0.08em;
-  white-space: nowrap;
+  background: url('/marca/sello.svg') center / 100% 100% no-repeat;
+  color: var(--tiza);
+  font-family: var(--cartel);
+  font-weight: 800;
+  font-style: italic;
+  font-size: 1.55rem;
+  line-height: 1;
   text-transform: uppercase;
   text-decoration: none;
-  line-height: 1;
+  white-space: nowrap;
   cursor: pointer;
-  box-shadow: 0 1px 0 rgb(255 255 255 / 0.6) inset, 0 8px 18px -6px rgb(0 0 0 / 0.65), 0 2px 3px rgb(0 0 0 / 0.4);
-  transition: background-color 180ms var(--ease), transform 180ms var(--ease), box-shadow 180ms var(--ease);
+  filter: drop-shadow(0 6px 10px rgb(0 0 0 / 0.45));
+  transition: transform 200ms var(--ease), filter 200ms var(--ease);
 }
 
-.plaqueta .icono { width: 1.1em; height: 1.1em; flex: none; margin-top: -0.12em; }
+.boton .icono { width: 1.15em; height: 1.15em; flex: none; }
 
-.plaqueta:hover {
-  background: var(--amarillo);
-  color: var(--fieltro);
+.boton:hover {
+  color: var(--tiza);
+  transform: rotate(-1.5deg) scale(1.03);
+  filter: drop-shadow(0 10px 14px rgb(0 0 0 / 0.55)) brightness(1.08);
 }
 
-.plaqueta:active {
-  transform: translateY(2px);
-  box-shadow: 0 1px 0 rgb(255 255 255 / 0.6) inset, 0 3px 6px -2px rgb(0 0 0 / 0.6);
-}
+.boton:active { transform: scale(0.98); filter: drop-shadow(0 3px 5px rgb(0 0 0 / 0.5)); }
 
-.plaqueta:focus-visible { outline-offset: 5px; }
+/* Tilde roja de las listas */
+.tildes { margin: 0; padding: 0; list-style: none; display: grid; gap: 0.55rem; }
+.tildes li { display: flex; align-items: center; gap: 0.6rem; font-weight: 500; font-size: 1.1rem; }
+.tildes .icono { width: 1.3rem; height: 1.3rem; color: var(--rojo-claro); stroke-width: 3.2; flex: none; }
+
+/* ---------- Estampado: lo que cambia se vuelve a pegar ---------- */
+
+.estampa { animation: estampa 460ms var(--ease) both; }
+
+@keyframes estampa {
+  from { opacity: 0; transform: scale(1.45) rotate(-7deg); filter: blur(4px); }
+  to { opacity: 1; transform: none; filter: blur(0); }
+}
 
 /* ---------- Aviso de datos de ejemplo ---------- */
 
 .aviso {
-  position: relative;
-  z-index: 41;
-  margin: var(--marco) var(--marco) 0;
-  padding: 0.55rem 1rem;
-  background: var(--amarillo);
-  color: var(--fieltro);
-  font-size: 0.9rem;
+  margin: 0;
+  padding: 0.5rem var(--gutter);
+  background: var(--tiza);
+  color: var(--carbon);
+  font-size: 0.88rem;
   font-weight: 500;
   text-align: center;
 }
